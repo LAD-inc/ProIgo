@@ -1,0 +1,12 @@
+<module rename-to='proigo'>
+  <inherits name='com.badlogic.gdx.backends.gdx_backends_gwt' />
+
+  <source path='core'/>
+  <source path='html'/>
+
+  <public path="resources" />
+
+  <entry-point class='com.garbri.proigo.html.proigoHtml'/>
+  <set-configuration-property name="gdx.assetpath" value="E:\\Code\\Github\\ProIgo\\proigo\\html/../desktop/assets,desktop/assets,../desktop/assets,../../../../desktop/assets/" />
+  <set-configuration-property name="gdx.assetoutputpath" value="E:\\Code\\Github\\ProIgo\\proigo\\html\\target/proigo-html-1.0-SNAPSHOT,proigo-1.0-SNAPSHOT,src/main/webapp,./" />
+</module>
