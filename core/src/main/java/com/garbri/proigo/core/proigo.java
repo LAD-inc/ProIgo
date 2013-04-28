@@ -47,6 +47,9 @@ private long lastRender;
 	
 	Car player1;
 	Car player2;
+	Ball ball;
+	Goal leftGoal;
+	Goal rightGoal;
 	
 	@Override
 	public void create() {		
@@ -80,12 +83,12 @@ private long lastRender;
 		debugRenderer = new Box2DDebugRenderer();
 	    
 	    //Create Goal Objects
-	    Goal leftGoal = new Goal(world, 2.5f, center.y, "right");
-	    Goal rightGoal = new Goal(world, (worldWidth -2.5f), center.y, "left");
+	    this.leftGoal = new Goal(world, 2.5f, center.y, "right");
+	    this.rightGoal = new Goal(world, (worldWidth -2.5f), center.y, "left");
 	    
 	    float touchlineLength = (worldHeight/2) - (leftGoal.getGoalLength()/2);
 	    
-	    Ball ball = new Ball(world, center.x, center.y);
+	    this.ball = new Ball(world, center.x, center.y);
 	    
 	    //outer walls
 	    BoxProp wall1 = new BoxProp(world, worldWidth, 1, new Vector2 (worldWidth/2,10f)); //bottom
@@ -117,6 +120,12 @@ private long lastRender;
 
 		player1.controlCar();
 		player2.controlCar();
+		this.ball.update();
+		
+		Vector2 ballLocation = this.ball.getLocation();
+		this.leftGoal.checkForGoal(ballLocation, 0f);
+		this.rightGoal.checkForGoal(ballLocation, 0f);
+		
 		
 		/**
 		 * Have box2d update the positions and velocities (and etc) of all
