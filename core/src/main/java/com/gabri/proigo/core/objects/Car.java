@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -33,6 +35,7 @@ public class Car {
 	public static final int ACC_BRAKE=2;
 	
 	Controls controls;
+	public Sprite sprite;
 	
 	
 	public Car(String playerName, World world, float width, float length, Vector2 position,
@@ -76,6 +79,11 @@ public class Car {
 		this.wheels.add(new Wheel(world, this, 1f, -1.2f, 0.4f, 0.8f, true,  true)); //top right
 		this.wheels.add(new Wheel(world, this, -1f, 1.2f, 0.4f, 0.8f, false,  false)); //back left
 		this.wheels.add(new Wheel(world, this, 1f, 1.2f, 0.4f, 0.8f, false,  false)); //back right
+		
+		//Texture texture = new Texture(Gdx.files.internal("proigo-core/resources/Images/Vehicles/redCar.png"));
+		//sprite = new Sprite(texture,0,0,60, 20);
+		
+		//this.body.setUserData(sprite);
 		
 		this.controls = controls;
 	}

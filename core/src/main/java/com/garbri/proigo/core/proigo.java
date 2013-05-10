@@ -46,6 +46,8 @@ private long lastRender;
 	private float worldHeight;
 	private static int PIXELS_PER_METER=15;      //how many pixels in a meter
 	
+	//private SpriteBatch batch = new SpriteBatch();
+	
 	Car player1;
 	Car player2;
 	Ball ball;
@@ -124,6 +126,15 @@ private long lastRender;
 		world.step(Gdx.app.getGraphics().getDeltaTime(), 3, 3);
 		
 		world.clearForces();
+		
+//		this.batch.begin();
+//		//this.player1.sprite = this.player1.body.getUserData()
+//		
+//		
+//		this.player1.sprite.setX(this.player1.body.getWorldCenter().x);
+//		this.player1.sprite.setY(this.player1.body.getWorldCenter().y);
+//		
+//		this.batch.end();
 		
 		/**
 		 * Draw this last, so we can see the collision boundaries on top of the
