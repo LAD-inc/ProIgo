@@ -10,9 +10,9 @@ public class Goal {
     BoxProp side2;
     BoxProp back;
     
-	private static float postLength = 6;
+	private static float postLength = 9;
 	private static float goalThickness = 1;
-	private static float barLength = 10;
+	private static float barLength = 15;
 	
 	String facing;
 	
@@ -77,5 +77,11 @@ public class Goal {
     {
     	return (this.barLength + (goalThickness*2));
     }
+    
+    public float getGoalDepth()
+    {
+    	return (this.postLength);
+    }
+    
     
 }

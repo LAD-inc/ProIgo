@@ -12,7 +12,7 @@ public class Ball {
 	
 	Body body;
 	
-	float ballSize = 1f;
+	float ballSize = 2f;
 	
 	public Ball(World world, float x, float y)
 	{
@@ -26,7 +26,7 @@ public class Ball {
 	    dynamicCircle.setRadius(ballSize);  
 	    FixtureDef fixtureDef = new FixtureDef();  
 	    fixtureDef.shape = dynamicCircle;  
-	    fixtureDef.density = 0.5f;  
+	    fixtureDef.density = 0.25f;  
 	    fixtureDef.friction = 0f;  
 	    fixtureDef.restitution = 1f;  
 	    this.body.createFixture(fixtureDef); 

@@ -18,6 +18,7 @@ import com.badlogic.gdx.Input;
 import com.gabri.proigo.core.objects.Ball;
 import com.gabri.proigo.core.objects.Car;
 import com.gabri.proigo.core.objects.Goal;
+import com.gabri.proigo.core.objects.Pitch;
 import com.garbri.proigo.core.utilities.BoxProp;
 import com.garbri.proigo.core.utilities.Controls;
 
@@ -51,6 +52,8 @@ private long lastRender;
 	Goal leftGoal;
 	Goal rightGoal;
 	
+	public Pitch pitch;
+	
 	@Override
 	public void create() {		
 //		screenWidth = Gdx.graphics.getWidth();
@@ -82,24 +85,9 @@ private long lastRender;
 										
 		debugRenderer = new Box2DDebugRenderer();
 	    
-	    //Create Goal Objects
-	    this.leftGoal = new Goal(world, 2.5f, center.y, "right");
-	    this.rightGoal = new Goal(world, (worldWidth -2.5f), center.y, "left");
-	    
-	    float touchlineLength = (worldHeight/2) - (leftGoal.getGoalLength()/2);
-	    
-	    this.ball = new Ball(world, center.x, center.y);
-	    
-	    //outer walls
-	    BoxProp wall1 = new BoxProp(world, worldWidth, 1, new Vector2 (worldWidth/2,10f)); //bottom
-	    
-	    BoxProp wall22 = new BoxProp(world, 1, touchlineLength, new Vector2 (7.5f, touchlineLength/2));//left
-	    BoxProp wall222 = new BoxProp(world, 1, touchlineLength, new Vector2 (7.5f, worldHeight-(touchlineLength/2)));//left
-	    
-	    BoxProp wall3 = new BoxProp(world,  worldWidth, 1, new Vector2 (worldWidth/2,worldHeight-10f));//top
-	    
-	    BoxProp wall44 = new BoxProp(world, 1, touchlineLength, new Vector2 (worldWidth -7.5f, touchlineLength/2));//left
-	    BoxProp wall444 = new BoxProp(world, 1, touchlineLength, new Vector2 (worldWidth -7.5f, worldHeight-(touchlineLength/2)));//left 
+		this.ball = new Ball(world, center.x, center.y);
+		
+		this.pitch = new Pitch(world, worldWidth, worldHeight, center);
 	 
 	}
 
@@ -123,8 +111,8 @@ private long lastRender;
 		this.ball.update();
 		
 		Vector2 ballLocation = this.ball.getLocation();
-		this.leftGoal.checkForGoal(ballLocation, 0f);
-		this.rightGoal.checkForGoal(ballLocation, 0f);
+		this.pitch.leftGoal.checkForGoal(ballLocation, 0f);
+		this.pitch.rightGoal.checkForGoal(ballLocation, 0f);
 		
 		
 		/**
