@@ -1,5 +1,6 @@
-package com.gabri.proigo.core.objects;
+package com.garbri.proigo.core.objects;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -10,11 +11,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Ball {
 	
-	Body body;
+	public Body body;
 	
 	float ballSize = 2f;
 	
-	public Ball(World world, float x, float y)
+	public Sprite sprite;
+	
+	public Ball(World world, float x, float y, Sprite ballSprite)
 	{
 		
 	    //Dynamic Body  
@@ -30,6 +33,8 @@ public class Ball {
 	    fixtureDef.friction = 0f;  
 	    fixtureDef.restitution = 1f;  
 	    this.body.createFixture(fixtureDef); 
+	    
+	    this.sprite = ballSprite;
 	}
 	
 	public Vector2 getLocalVelocity() {
@@ -44,9 +49,13 @@ public class Ball {
 		Vector2 currentVelocity = this.getLocalVelocity();
 		Vector2 position= this.getLocation();
 		
-		System.out.println("Ball Position - " + position + "Ball Velocity - " + currentVelocity);
+		//System.out.println("Ball Position - " + position + "Ball Velocity - " + currentVelocity);
 		
-		this.body.applyForce(this.body.getWorldVector(new Vector2(-(currentVelocity.x/3), -(currentVelocity.y/3))), position, true );
+		float slowDownMultiplier = 0.5f;
+		
+		
+		
+		this.body.applyForce(this.body.getWorldVector(new Vector2(-(currentVelocity.x*(slowDownMultiplier)), -(currentVelocity.y*(slowDownMultiplier)))), position, true );
 	}
 	
 	public Vector2 getLocation()

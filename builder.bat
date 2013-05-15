@@ -7,14 +7,16 @@ ECHO ============MAIN MENU============
 ECHO -------------------------------------
 echo 1. Build Desktop Application
 echo 2. Run Desktop Application
-echo 3. Maven Clean
+echo 3. Package HTML Application
+echo 8. Maven Clean
 ECHO -------------------------------------
 set INPUT=
 set /P INPUT=Please select an option:
 
 IF /I '%INPUT%'=='1' GOTO BuildDesktop
 IF /I '%INPUT%'=='2' GOTO runDesktop
-IF /I '%INPUT%'=='3' GOTO MavenClean
+IF /I '%INPUT%'=='3' GOTO buildHtml
+IF /I '%INPUT%'=='8' GOTO MavenClean
 
 ECHO ============INVALID INPUT============
 ECHO -------------------------------------
@@ -47,6 +49,12 @@ GOTO start
 call "%JAVA_HOME%/bin/java" -jar desktop/target/proigo-desktop-1.0-SNAPSHOT-jar-with-dependencies.jar
 pause
 GOTO start
+
+:buildHtml
+call %M2%/mvn -Phtml package > output.txt
+pause
+GOTO start
+
 
 :MavenClean
 call %M2%/mvn clean

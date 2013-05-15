@@ -1,5 +1,7 @@
-package com.gabri.proigo.core.objects;
+package com.garbri.proigo.core.objects;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -8,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.garbri.proigo.core.utilities.SpriteHelper;
 
 public class Wheel {	
 	/**
@@ -24,15 +27,19 @@ public class Wheel {
 	public boolean revolving; // does this wheel revolve when steering?
 	public boolean powered; // is this wheel powered?
 	public Body body;
+	
+	public Sprite sprite;
 
 	public Wheel(World world, Car car, float posX, float posY, float width, float length,
-			boolean revolving, boolean powered) {
+			boolean revolving, boolean powered, Sprite wheelSprite) {
 		super();
 		this.car = car;
 		this.width = width;
 		this.length = length;
 		this.revolving = revolving;
 		this.powered = powered;
+		
+		this.sprite = wheelSprite;
 		
 		//init body 
 		BodyDef bodyDef = new BodyDef();
@@ -109,4 +116,9 @@ public class Wheel {
 	    */
 	    this.body.setLinearVelocity(this.getKillVelocityVector());
 	};
+	
+	public void updateSprite(SpriteBatch spriteBatch, int PIXELS_PER_METER)
+	{
+		SpriteHelper.updateSprite(this.sprite, spriteBatch, PIXELS_PER_METER, this.body);
+	}
 }

@@ -1,4 +1,4 @@
-package com.gabri.proigo.core.objects;
+package com.garbri.proigo.core.objects;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -15,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.garbri.proigo.core.proigo;
 import com.garbri.proigo.core.utilities.Controls;
+import com.garbri.proigo.core.utilities.SpriteHelper;
 
 public class Car {
 	public Body body;
@@ -39,7 +42,7 @@ public class Car {
 	
 	
 	public Car(String playerName, World world, float width, float length, Vector2 position,
-			float angle, float power, float maxSteerAngle, float maxSpeed, Controls controls) {
+			float angle, float power, float maxSteerAngle, float maxSpeed, Controls controls, Sprite carSprite, Sprite wheelSprite) {
 		super();
 		
 		this.playerName = playerName;
@@ -75,17 +78,15 @@ public class Car {
 		
 		//initialize wheels
 		this.wheels = new ArrayList<Wheel>();
-		this.wheels.add(new Wheel(world, this, -1f, -1.2f, 0.4f, 0.8f, true,  true)); //top left
-		this.wheels.add(new Wheel(world, this, 1f, -1.2f, 0.4f, 0.8f, true,  true)); //top right
-		this.wheels.add(new Wheel(world, this, -1f, 1.2f, 0.4f, 0.8f, false,  false)); //back left
-		this.wheels.add(new Wheel(world, this, 1f, 1.2f, 0.4f, 0.8f, false,  false)); //back right
+		this.wheels.add(new Wheel(world, this, -1f, -1.2f, 0.4f, 0.8f, true,  true, wheelSprite)); //top left
+		this.wheels.add(new Wheel(world, this, 1f, -1.2f, 0.4f, 0.8f, true,  true, wheelSprite)); //top right
+		this.wheels.add(new Wheel(world, this, -1f, 1.2f, 0.4f, 0.8f, false,  false, wheelSprite)); //back left
+		this.wheels.add(new Wheel(world, this, 1f, 1.2f, 0.4f, 0.8f, false,  false, wheelSprite)); //back right
 		
-		//Texture texture = new Texture(Gdx.files.internal("proigo-core/resources/Images/Vehicles/redCar.png"));
-		//sprite = new Sprite(texture,0,0,60, 20);
-		
-		//this.body.setUserData(sprite);
 		
 		this.controls = controls;
+		
+		this.sprite = carSprite;
 	}
 	
 	public List<Wheel> getPoweredWheels () {
@@ -217,8 +218,22 @@ public class Car {
            wheel.body.applyForce(wheel.body.getWorldVector(new Vector2(forceVector.x, forceVector.y)), position, true );
         }
         
-        System.out.println(this.playerName + "'s Car Speed: " + this.getSpeedKMH());
+        //System.out.println(this.playerName + "'s Car Speed: " + this.getSpeedKMH());
         //if going very slow, stop - to prevent endless sliding
 
 	}
+	
+	public void updateSprite(SpriteBatch spriteBatch, int PIXELS_PER_METER)
+	{
+		
+		//Update Car Body Sprite
+		SpriteHelper.updateSprite(this.sprite, spriteBatch, PIXELS_PER_METER, this.body);
+		
+		//Update Wheels Sprites
+        for(Wheel wheel:wheels)
+        {
+        	wheel.updateSprite(spriteBatch, PIXELS_PER_METER);
+        }
+	}
+	
 }

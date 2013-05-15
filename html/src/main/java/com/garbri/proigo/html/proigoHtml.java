@@ -14,6 +14,6 @@ public class proigoHtml extends GwtApplication {
 	
 	@Override
 	public GwtApplicationConfiguration getConfig () {
-		return new GwtApplicationConfiguration(480, 320);
+		return new GwtApplicationConfiguration(800, 600);
 	}
 }

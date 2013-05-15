@@ -15,12 +15,13 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.gabri.proigo.core.objects.Ball;
-import com.gabri.proigo.core.objects.Car;
-import com.gabri.proigo.core.objects.Goal;
-import com.gabri.proigo.core.objects.Pitch;
+import com.garbri.proigo.core.objects.Ball;
+import com.garbri.proigo.core.objects.Car;
+import com.garbri.proigo.core.objects.Goal;
+import com.garbri.proigo.core.objects.Pitch;
 import com.garbri.proigo.core.utilities.BoxProp;
 import com.garbri.proigo.core.utilities.Controls;
+import com.garbri.proigo.core.utilities.SpriteHelper;
 
 public class proigo implements ApplicationListener {
 private long lastRender;
@@ -44,9 +45,8 @@ private long lastRender;
 	private int screenHeight;	
 	private float worldWidth;
 	private float worldHeight;
-	private static int PIXELS_PER_METER=15;      //how many pixels in a meter
+	private static int PIXELS_PER_METER=10;      //how many pixels in a meter
 	
-	//private SpriteBatch batch = new SpriteBatch();
 	
 	Car player1;
 	Car player2;
@@ -55,6 +55,8 @@ private long lastRender;
 	Goal rightGoal;
 	
 	public Pitch pitch;
+	
+	private SpriteHelper spriteHelper;
 	
 	@Override
 	public void create() {		
@@ -74,12 +76,14 @@ private long lastRender;
 		Vector2 center = new Vector2(worldWidth/2, worldHeight/2);
 		
 		world = new World(new Vector2(0.0f, 0.0f), true);	
+		
+		spriteHelper = new SpriteHelper();
 	    
 	    this.player1 = new Car("player1", world, 2, 4,
-	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 120, new Controls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT));
+	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 120, new Controls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
-	    		new Vector2((worldWidth -15f), center.y), (float) (Math.PI + Math.PI/2), 60, 20, 120, new Controls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D));
+	    		new Vector2((worldWidth -15f), center.y), (float) (Math.PI + Math.PI/2), 60, 20, 120, new Controls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
 		
 	    camera = new OrthographicCamera();
 	    camera.setToOrtho(false, screenWidth, screenHeight);
@@ -87,7 +91,7 @@ private long lastRender;
 										
 		debugRenderer = new Box2DDebugRenderer();
 	    
-		this.ball = new Ball(world, center.x, center.y);
+		this.ball = new Ball(world, center.x, center.y, spriteHelper.getBallSprite());
 		
 		this.pitch = new Pitch(world, worldWidth, worldHeight, center);
 	 
@@ -100,7 +104,7 @@ private long lastRender;
 
 	@Override
 	public void render() {	
-	    Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+	    Gdx.gl.glClearColor(0, 0.5f, 0.05f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
 	    // tell the camera to update its matrices.
@@ -127,14 +131,18 @@ private long lastRender;
 		
 		world.clearForces();
 		
-//		this.batch.begin();
-//		//this.player1.sprite = this.player1.body.getUserData()
-//		
-//		
-//		this.player1.sprite.setX(this.player1.body.getWorldCenter().x);
-//		this.player1.sprite.setY(this.player1.body.getWorldCenter().y);
-//		
-//		this.batch.end();
+		this.spriteBatch.begin();
+		//Update Player/Car 1
+		
+		player1.updateSprite(spriteBatch, PIXELS_PER_METER);
+		
+		//Update Player/Car 2
+		player2.updateSprite(spriteBatch, PIXELS_PER_METER);
+		
+		//Update Ball
+		SpriteHelper.updateSprite(ball.sprite, spriteBatch, PIXELS_PER_METER, ball.body);
+		
+		this.spriteBatch.end();
 		
 		/**
 		 * Draw this last, so we can see the collision boundaries on top of the
