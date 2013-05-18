@@ -212,9 +212,9 @@ public class Car {
         if((this.accelerate==this.ACC_ACCELERATE) && (this.getSpeedKMH() < this.maxSpeed)){
         	
         	if(this.getLocalVelocity().y<20)
-        		baseVector= new Vector2(0, -2);
+        		baseVector= new Vector2(0, -2.2f);
         	else
-        		baseVector= new Vector2(0, -1);
+        		baseVector= new Vector2(0, -1.1f);
         }
         else if(this.accelerate==this.ACC_BRAKE){
             //braking, but still moving forwards - increased force

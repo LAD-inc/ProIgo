@@ -125,10 +125,10 @@ private long lastRender;
 		this.maze = new Maze(world, worldWidth, worldHeight, center);
 
 	    this.player1 = new Car("player1", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 120, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 120, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
 
 		
 	    camera = new OrthographicCamera();
@@ -160,10 +160,10 @@ private long lastRender;
 		this.displayWinMessage = false;
 		
 	    this.player1 = new Car("player1", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 120, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 120, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());	}
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());	}
 	
 	private Controls getPlayerControls(int player, Controller controller)
 	{
