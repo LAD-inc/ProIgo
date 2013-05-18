@@ -15,6 +15,9 @@ public class proigo extends Game {
 		maze1 = new Maze1(this);
 		maze2 = new Maze2(this);
 		soccerScreen = new SoccerScreen(this);
+		
+		this.soccerScreen.ballOffsetX = 0f;
+		
 		setScreen(maze1); 
 		
 	 

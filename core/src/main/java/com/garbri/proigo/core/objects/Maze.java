@@ -21,6 +21,8 @@ public class Maze
 	
 	public List<BoxProp> walls;
 	
+	public int numberOfInnerWalls;
+	
 	
 	
 	
@@ -28,12 +30,14 @@ public class Maze
 	{
 		this.walls = new ArrayList<BoxProp>();
 		
+		numberOfInnerWalls = 6;
+		
 		int numberOfPlayers = 2;
 		float gapFromOuterEdge = 1f;
 		float playerGapX = 7f;
 		float playerGapY = 7f;
 		
-		this.winBoxSize = worldHeight/10;
+		this.winBoxSize = worldHeight/(numberOfInnerWalls + 1);
 		
 		this.center = center;
 		
@@ -43,7 +47,7 @@ public class Maze
 		createOuterWalls(world, worldWidth, worldHeight, center, gapFromOuterEdge);
 		
 		//make it even!
-		createInnerWalls(world, worldWidth, worldHeight, center, gapFromOuterEdge, 6);
+		createInnerWalls(world, worldWidth, worldHeight, center, gapFromOuterEdge, numberOfInnerWalls);
 		
 		//BottomLeft
 		playerStartPoint[0] = new Vector2 (gapFromOuterEdge + playerGapX , gapFromOuterEdge + playerGapY);
@@ -76,13 +80,13 @@ public class Maze
 	    	}
 			
 			
-	    	if(carCenter.y >= (this.center.y + winBoxSize))
+	    	if(carCenter.y >= (this.center.y + winBoxSize/2))
 	    	{
 	    		//Car is too far up
 	    		return false;
 	    	}
 	    	
-	    	if(carCenter.y <= (this.center.y - winBoxSize))
+	    	if(carCenter.y <= (this.center.y - winBoxSize/2))
 	    	{
 	    		//Car is too far down
 	    		return false;

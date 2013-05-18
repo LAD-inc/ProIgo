@@ -110,16 +110,21 @@ private long lastRender;
 		
 		this.timer.startCountDown(3);
 		
-	    this.player1 = new Car("player1", world, 2, 4,
+	    createAllCars();
+	}
+	
+	private void createAllCars()
+	{
+		this.player1 = new Car("player1", world, 2, 4,
 	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
+	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(2), spriteHelper.getWheelSprite());
 	    this.player3 = new Car("player1", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(2), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(2), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
 	    
 	    this.player4 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(3), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());	
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(3), spriteHelper.getCarSprite(3), spriteHelper.getWheelSprite());
 	}
 
 	@Override
@@ -152,6 +157,7 @@ private long lastRender;
 	    
 		spriteBatch.setProjectionMatrix(camera.combined);
 
+		this.spriteBatch.begin();
 
 		if (this.timer.countDownTimer == 0)
 		{
@@ -159,6 +165,11 @@ private long lastRender;
 			player2.controlCar();
 			player3.controlCar();
 			player4.controlCar();
+		}
+		else
+		{
+			if(!this.displayWinMessage)
+				textDisplayer.font.draw(spriteBatch, "RACE TO THE MIDDLE TO GAIN THE ADVANTAGE" , (center.x * PIXELS_PER_METER) - ("RACE TO THE MIDDLE TO GAIN THE ADVANTAGE   ".length() * 3) , (center.y - 10f) * PIXELS_PER_METER);
 		}
 
 		this.ball.update();
@@ -170,22 +181,26 @@ private long lastRender;
 			if (this.maze.checkForWin(this.player1.body.getPosition(), this.player1.playerName))
 			{
 				this.displayWinMessage = true;
-				this.winMessage = this.player1.playerName.toUpperCase() + " WINS";
+				this.winMessage = "BLUE TEAM WINS";
+				this.timer.startCountDown(3);
 			}
 			if (this.maze.checkForWin(this.player2.body.getPosition(), this.player2.playerName))
 			{
 				this.displayWinMessage = true;
-				this.winMessage = this.player2.playerName.toUpperCase() + " WINS";
+				this.winMessage = "RED TEAM WINS";
+				this.timer.startCountDown(3);
 			}
 			if (this.maze.checkForWin(this.player3.body.getPosition(), this.player1.playerName))
 			{
 				this.displayWinMessage = true;
-				this.winMessage = this.player3.playerName.toUpperCase() + " WINS";
+				this.winMessage = "BLUE TEAM WINS";
+				this.timer.startCountDown(3);
 			}
 			if (this.maze.checkForWin(this.player4.body.getPosition(), this.player2.playerName))
 			{
 				this.displayWinMessage = true;
-				this.winMessage = this.player4.playerName.toUpperCase() + " WINS";
+				this.winMessage = "RED TEAM WINS";
+				this.timer.startCountDown(3);
 			}
 		}
 		
@@ -201,8 +216,6 @@ private long lastRender;
 		world.step(Gdx.app.getGraphics().getDeltaTime(), 3, 3);
 		
 		world.clearForces();
-		
-		this.spriteBatch.begin();
 		
 		this.finishLine.setPosition((this.center.x * PIXELS_PER_METER) - this.finishLine.getWidth()/2, (this.center.y * PIXELS_PER_METER) - this.finishLine.getHeight()/2);
 		this.finishLine.draw(spriteBatch);
@@ -225,6 +238,21 @@ private long lastRender;
 		if (this.displayWinMessage)
 		{
 			textDisplayer.font.draw(spriteBatch, this.winMessage , (center.x * PIXELS_PER_METER) - (this.winMessage.length() * 3) , center.y * PIXELS_PER_METER);
+			
+			if(this.timer.countDownTimer == 0)
+			{
+				if(this.winMessage.equals("RED TEAM WINS"))
+				{
+					this.game.soccerScreen.ballOffsetX = 40f; 
+				}
+				else
+				{
+					this.game.soccerScreen.ballOffsetX = -40f; 
+				}
+				
+				this.game.setScreen(this.game.soccerScreen);
+				
+			}
 		}
 		
 		String temp = this.timer.getElapsedTimeAsString();
@@ -272,8 +300,6 @@ private long lastRender;
 		world = new World(new Vector2(0.0f, 0.0f), true);	
 		
 		spriteHelper = new SpriteHelper();
-	    
-		this.finishLine = spriteHelper.getFinishLineSprite(20, (int) (worldHeight/5)*PIXELS_PER_METER);
 		
 		int i = 0;
 		
@@ -302,19 +328,11 @@ private long lastRender;
 		textDisplayer = new TextDisplayHelper();
 		this.maze = new Maze(world, worldWidth, worldHeight, center);
 
-	    this.player1 = new Car("player1", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
-	    
-	    this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
-	    
-	    this.player3 = new Car("player1", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(2), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
-	    
-	    this.player4 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(3), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
+		createAllCars();
 
 		
+	    this.finishLine = spriteHelper.getFinishLineSprite(20, (int) (worldHeight/(this.maze.numberOfInnerWalls+1))*PIXELS_PER_METER);
+	    
 	    camera = new OrthographicCamera();
 	    camera.setToOrtho(false, screenWidth, screenHeight);
 	    spriteBatch = new SpriteBatch();		

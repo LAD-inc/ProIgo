@@ -41,10 +41,10 @@ public class SpriteHelper {
 	public Sprite getCarSprite(int colour)
 	{
 		//limit to max number of cars
-		if(colour < 0 || colour > 2)
+		if(colour < 0 || colour > 3)
 			colour = 0;
 		
-		return new Sprite(carTexture,(20*colour),0,20, 40);
+		return new Sprite(carTexture,(20*colour),40,20, 40);
 	}
 	
 	public Sprite getBallSprite()

@@ -21,6 +21,8 @@ import com.garbri.proigo.core.objects.Car;
 import com.garbri.proigo.core.objects.Goal;
 import com.garbri.proigo.core.objects.Pitch;
 import com.garbri.proigo.core.utilities.SpriteHelper;
+import com.garbri.proigo.core.utilities.TextDisplayHelper;
+import com.garbri.proigo.core.utilities.TimerHelper;
 
 public class SoccerScreen implements Screen{
 
@@ -55,6 +57,14 @@ public class SoccerScreen implements Screen{
 	private Goal leftGoal;
 	private Goal rightGoal;
 	
+	public float ballOffsetX; 
+	
+	private int redTeamScore = 0;
+	private int blueTeamScore = 0;
+	
+	private Boolean displayWinMessage;
+	private String winMessage;
+	
 	private Vector2 center;
 	
 	public Pitch pitch;
@@ -62,6 +72,10 @@ public class SoccerScreen implements Screen{
 	private SpriteHelper spriteHelper;
 	
 	private proigo game;
+	
+	private TimerHelper timer;
+	
+	private TextDisplayHelper textDisplayer;
 	
 	ArrayList<IControls> controls =  new ArrayList<IControls>();
 	Controller[] controllers = new Controller[4];
@@ -79,6 +93,8 @@ public class SoccerScreen implements Screen{
 
 	    // tell the camera to update its matrices.
 	    camera.update();
+	    
+	    this.timer.progressTime();
 
 	    //checkForReset
 	    if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
@@ -94,15 +110,35 @@ public class SoccerScreen implements Screen{
 
 		spriteBatch.setProjectionMatrix(camera.combined);
 
-		player1.controlCar();
-		player2.controlCar();
-		player3.controlCar();
-		player4.controlCar();
+		if (this.timer.countDownTimer == 0)
+		{
+			player1.controlCar();
+			player2.controlCar();
+			player3.controlCar();
+			player4.controlCar();
+		}
+		
 		this.ball.update();
 
 		Vector2 ballLocation = this.ball.getLocation();
-		this.pitch.leftGoal.checkForGoal(ballLocation, 0f);
-		this.pitch.rightGoal.checkForGoal(ballLocation, 0f);
+		
+		if (!displayWinMessage)
+		{
+			if (this.pitch.leftGoal.checkForGoal(ballLocation, 0f))
+			{
+				this.displayWinMessage = true;
+				this.winMessage = "RED TEAM SCORED!!";
+				this.redTeamScore ++;
+				this.timer.startCountDown(3);
+			}
+			else if (this.pitch.rightGoal.checkForGoal(ballLocation, 0f))
+			{
+				this.displayWinMessage = true;
+				this.winMessage = "BLUE TEAM SCORED!!";
+				this.blueTeamScore ++;
+				this.timer.startCountDown(3);
+			}
+		}
 
 
 		/**
@@ -122,9 +158,29 @@ public class SoccerScreen implements Screen{
 
 		//Update Player/Car 2
 		player2.updateSprite(spriteBatch, PIXELS_PER_METER);
-
+		
+		this.player3.updateSprite(spriteBatch, PIXELS_PER_METER);
+		
+		this.player4.updateSprite(spriteBatch, PIXELS_PER_METER);
+		
+		String blueTeamString = String.valueOf(this.blueTeamScore);
+		String redTeamString = String.valueOf(this.redTeamScore);
+		
+		textDisplayer.font.draw(spriteBatch, blueTeamString , (center.x / 2 * PIXELS_PER_METER) - (blueTeamString.length() * 3) , (worldHeight - 5f) * PIXELS_PER_METER);
+		textDisplayer.font.draw(spriteBatch, redTeamString , ((3*center.x / 2) * PIXELS_PER_METER) - (redTeamString.length() * 3) , (worldHeight - 5f) * PIXELS_PER_METER);
+		
 		//Update Ball
 		SpriteHelper.updateSprite(ball.sprite, spriteBatch, PIXELS_PER_METER, ball.body);
+		
+		if (this.displayWinMessage)
+		{
+			textDisplayer.font.draw(spriteBatch, this.winMessage , (center.x * PIXELS_PER_METER) - (this.winMessage.length() * 3) , center.y * PIXELS_PER_METER);
+			
+			if(this.timer.countDownTimer == 0)
+			{
+				this.game.setScreen(this.game.maze1);
+			}
+		}
 
 		this.spriteBatch.end();
 		
@@ -194,10 +250,15 @@ public class SoccerScreen implements Screen{
 
 		debugRenderer = new Box2DDebugRenderer();
 
-		this.ball = new Ball(world, center.x, center.y, spriteHelper.getBallSprite());
+		this.ball = new Ball(world, center.x + this.ballOffsetX, center.y, spriteHelper.getBallSprite());
 
 		this.pitch = new Pitch(world, worldWidth, worldHeight, center);
 		
+		this.displayWinMessage = false;
+		
+		textDisplayer = new TextDisplayHelper();
+		
+		this.timer = new TimerHelper();		
 	}
 	
 	private void resetGame()
@@ -214,6 +275,13 @@ public class SoccerScreen implements Screen{
 		createPlayer2();
 		createPlayer3();
 		createPlayer4();
+		
+		this.displayWinMessage = false;
+		
+		this.blueTeamScore= 0;
+		this.redTeamScore = 0;
+		
+		ballOffsetX = 0f;
 	}
 	
 	private void createPlayer1()
@@ -224,18 +292,18 @@ public class SoccerScreen implements Screen{
 	private void createPlayer3()
 	{
 	    this.player3 = new Car("player3", world, 2, 4,
-	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 180, controls.get(2), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 180, controls.get(2), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
 	}
 	private void createPlayer4()
 	{
 	    this.player4 = new Car("player4", world, 2, 4,
-	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 180, controls.get(3), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    		new Vector2((worldWidth -15f), center.y), (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(3), spriteHelper.getCarSprite(3), spriteHelper.getWheelSprite());
 	}
 	
 	private void createPlayer2()
 	{
 		this.player2 = new Car("player2", world, 2, 4,
-				new Vector2((worldWidth -15f), center.y), (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
+				new Vector2((worldWidth -15f), center.y), (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(2), spriteHelper.getWheelSprite());
 	}
 
 	@Override
