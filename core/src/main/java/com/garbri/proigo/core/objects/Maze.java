@@ -21,7 +21,7 @@ public class Maze
 		float playerGapX = 7f;
 		float playerGapY = 7f;
 		
-		this.winBoxSize = 10f;
+		this.winBoxSize = worldHeight/10;
 		
 		this.center = center;
 		
@@ -29,6 +29,9 @@ public class Maze
 		playerStartPoint = new Vector2[numberOfPlayers];
 		
 		createOuterWalls(world, worldWidth, worldHeight, center, gapFromOuterEdge);
+		
+		//make it even!
+		createInnerWalls(world, worldWidth, worldHeight, center, gapFromOuterEdge, 4);
 		
 		//BottomLeft
 		playerStartPoint[0] = new Vector2 (gapFromOuterEdge + playerGapX , gapFromOuterEdge + playerGapY);
@@ -47,30 +50,27 @@ public class Maze
 		
 		if(!this.gameFinished)
 		{
-			if(carCenter.x <= (this.center.x - winBoxSize/2))
+			if(carCenter.x <= (this.center.x - 1))
 	    	{
 				//Car is too far left
 	    		return false;
 	    	}
 			
-			if(carCenter.x >= (this.center.x + winBoxSize/2))
+			if(carCenter.x >= (this.center.x + 1))
 	    	{
 				//Car is too far right
-				
-				System.out.println(carCenter.x + " >= " + (this.center.x + winBoxSize/2));
-				
 				
 	    		return false;
 	    	}
 			
 			
-	    	if(carCenter.y >= (this.center.y + winBoxSize/2))
+	    	if(carCenter.y >= (this.center.y + winBoxSize))
 	    	{
 	    		//Car is too far up
 	    		return false;
 	    	}
 	    	
-	    	if(carCenter.y <= (this.center.y - winBoxSize/2))
+	    	if(carCenter.y <= (this.center.y - winBoxSize))
 	    	{
 	    		//Car is too far down
 	    		return false;
@@ -97,6 +97,39 @@ public class Maze
 	    BoxProp topWall = new BoxProp(world,  worldWidth, 1, new Vector2 (worldWidth/2,worldHeight-gapFromOuterEdge));//top
 	    
 	    BoxProp rightWall = new BoxProp(world, 1, worldHeight, new Vector2 (worldWidth - gapFromOuterEdge, worldHeight/2));//left Wall
+	}
+	
+	private void createInnerWalls(World world, float worldWidth, float worldHeight, Vector2 center, float gapFromOuterEdge, int numberOfInnerWalls)
+	{
+		
+		float gapForGettingThrough = 20f;
+		
+		float wallLength =  worldWidth - gapForGettingThrough;
+		
+		BoxProp wall1 = new BoxProp(world, wallLength, 1 , new Vector2 ((worldWidth - gapForGettingThrough)/2, worldHeight/5));//inner wall 1 - starts at left
+		
+		BoxProp wall3 = new BoxProp(world, wallLength, 1 , new Vector2 ((worldWidth - gapForGettingThrough)/2, 3*(worldHeight/5))); //inner wall 3 - starts at left
+		
+		BoxProp wall2 = new BoxProp(world, wallLength, 1 , new Vector2 (gapForGettingThrough + (wallLength/2), 2*(worldHeight/5))); //inner wall 2 - starts at right
+		
+		BoxProp wall4 = new BoxProp(world, wallLength, 1 , new Vector2 (gapForGettingThrough + (wallLength/2), 4*(worldHeight/5))); //inner wall 4 - starts at right
+		
+//		BoxProp[] walls = new BoxProp[numberOfInnerWalls];
+//		
+//		for (int i = 1; i <= numberOfInnerWalls; i++)
+//		{
+//			if (i%2 == 0)
+//			{
+//				//Should be starting from the right
+//				walls[i-1] = new BoxProp(world, wallLength, 1 , new Vector2 (gapForGettingThrough + (wallLength/2), i*(worldHeight/numberOfInnerWalls+1))); //inner wall 2 - starts at right
+//			}
+//			else
+//			{
+//				walls[i-1] = new BoxProp(world, wallLength, 1 , new Vector2 ((worldWidth - gapForGettingThrough)/2, i*(worldHeight/numberOfInnerWalls+1))); //inner wall 3 - starts at left
+//			}
+//		}
+		
+		
 	}
 
 }
