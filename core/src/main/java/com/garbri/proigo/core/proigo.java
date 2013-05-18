@@ -95,7 +95,7 @@ private long lastRender;
 		
 		
 		
-		if(this.controllers[0] != null)
+		//if(this.controllers[0] != null)
 			
 			
 		
