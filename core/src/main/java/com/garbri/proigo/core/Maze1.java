@@ -108,6 +108,8 @@ private long lastRender;
 		
 		this.timer.resetTimer();
 		
+		this.timer.startCountDown(3);
+		
 	    this.player1 = new Car("player1", world, 2, 4,
 	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
@@ -131,6 +133,8 @@ private long lastRender;
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
 
+		this.timer.progressTime();
+		
 	    // tell the camera to update its matrices.
 	    camera.update();
 	    
@@ -148,10 +152,15 @@ private long lastRender;
 	    
 		spriteBatch.setProjectionMatrix(camera.combined);
 
-		player1.controlCar();
-		player2.controlCar();
-		player3.controlCar();
-		player4.controlCar();
+
+		if (this.timer.countDownTimer == 0)
+		{
+			player1.controlCar();
+			player2.controlCar();
+			player3.controlCar();
+			player4.controlCar();
+		}
+
 		this.ball.update();
 		
 		if (!this.displayWinMessage)
@@ -321,6 +330,8 @@ private long lastRender;
 		this.displayWinMessage = false;
 		
 		this.timer = new TimerHelper();		
+		
+		this.timer.startCountDown(3);
 		
 		
 		
