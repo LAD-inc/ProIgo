@@ -151,6 +151,18 @@ public class Car {
 	    this.body.setLinearVelocity(velocity);
 	}
 	
+	public void destroyCar()
+	{
+		World world = this.body.getWorld();
+		
+        //update revolving wheels
+        for(Wheel wheel:this.wheels) {
+        	world.destroyBody(wheel.body);
+        }
+        
+        world.destroyBody(this.body);
+	}
+	
 	public void update (float deltaTime){
 	    
         //1. KILL SIDEWAYS VELOCITY
