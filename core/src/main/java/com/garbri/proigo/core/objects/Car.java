@@ -219,10 +219,10 @@ public class Car {
         else if(this.accelerate==this.ACC_BRAKE){
             //braking, but still moving forwards - increased force
             if(this.getLocalVelocity().y<0)
-            	baseVector= new Vector2(0f, 1.3f);
+            	baseVector= new Vector2(0f, 2f);
             //going in reverse - less force
             else 
-            	baseVector=new Vector2(0f, 0.7f);
+            	baseVector=new Vector2(0f, 1f);
         }
         else if (this.accelerate==this.ACC_NONE ) {
         	//slow down if not accelerating

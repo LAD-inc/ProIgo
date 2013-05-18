@@ -107,6 +107,7 @@ public class Wheel {
 	    Vector2 velocity = this.body.getLinearVelocity();
 	    Vector2 sidewaysAxis=this.getDirectionVector();
 	    float dotprod = velocity.dot(sidewaysAxis);
+	    dotprod = dotprod - (dotprod/100);
 	    return new Vector2(sidewaysAxis.x*dotprod, sidewaysAxis.y*dotprod);
 	};
 

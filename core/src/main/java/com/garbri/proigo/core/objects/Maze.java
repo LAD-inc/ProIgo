@@ -41,7 +41,7 @@ public class Maze
 		createOuterWalls(world, worldWidth, worldHeight, center, gapFromOuterEdge);
 		
 		//make it even!
-		createInnerWalls(world, worldWidth, worldHeight, center, gapFromOuterEdge, 4);
+		createInnerWalls(world, worldWidth, worldHeight, center, gapFromOuterEdge, 6);
 		
 		//BottomLeft
 		playerStartPoint[0] = new Vector2 (gapFromOuterEdge + playerGapX , gapFromOuterEdge + playerGapY);

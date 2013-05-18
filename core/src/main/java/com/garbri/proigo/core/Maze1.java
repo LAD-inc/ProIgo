@@ -58,6 +58,8 @@ private long lastRender;
 	
 	Car player1;
 	Car player2;
+	Car player3;
+	Car player4;
 	Ball ball;
 	Goal leftGoal;
 	Goal rightGoal;
@@ -98,6 +100,8 @@ private long lastRender;
 		
 		this.player1.destroyCar();
 		this.player2.destroyCar();
+		this.player3.destroyCar();
+		this.player4.destroyCar();
 		
 		this.maze.gameFinished = false;
 		this.displayWinMessage = false;
@@ -108,7 +112,12 @@ private long lastRender;
 	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());	
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
+	    this.player3 = new Car("player1", world, 2, 4,
+	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(2), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    
+	    this.player4 = new Car("player2", world, 2, 4,
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(3), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());	
 	}
 
 	@Override
@@ -141,6 +150,8 @@ private long lastRender;
 
 		player1.controlCar();
 		player2.controlCar();
+		player3.controlCar();
+		player4.controlCar();
 		this.ball.update();
 		
 		if (!this.displayWinMessage)
@@ -156,6 +167,16 @@ private long lastRender;
 			{
 				this.displayWinMessage = true;
 				this.winMessage = this.player2.playerName.toUpperCase() + " WINS";
+			}
+			if (this.maze.checkForWin(this.player3.body.getPosition(), this.player1.playerName))
+			{
+				this.displayWinMessage = true;
+				this.winMessage = this.player3.playerName.toUpperCase() + " WINS";
+			}
+			if (this.maze.checkForWin(this.player4.body.getPosition(), this.player2.playerName))
+			{
+				this.displayWinMessage = true;
+				this.winMessage = this.player4.playerName.toUpperCase() + " WINS";
 			}
 		}
 		
@@ -182,6 +203,12 @@ private long lastRender;
 		
 		//Update Player/Car 2
 		player2.updateSprite(spriteBatch, PIXELS_PER_METER);
+		
+		//Update Player/Car 1		
+		player3.updateSprite(spriteBatch, PIXELS_PER_METER);
+				
+		//Update Player/Car 2
+		player4.updateSprite(spriteBatch, PIXELS_PER_METER);
 		
 		//Update Ball
 		SpriteHelper.updateSprite(ball.sprite, spriteBatch, PIXELS_PER_METER, ball.body);
@@ -254,12 +281,12 @@ private long lastRender;
 			   
 		}
 			
-			if(controls.size() == 1){
+			
 				controls.add( new KeyboardControls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT));
-			}else if(controls.size() == 0){
 				controls.add( new KeyboardControls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT));
 				controls.add( new KeyboardControls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D));
-			}
+				controls.add( new KeyboardControls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D));
+			
 			
 		
 		
@@ -271,6 +298,12 @@ private long lastRender;
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
 	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
+	    
+	    this.player3 = new Car("player1", world, 2, 4,
+	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(2), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    
+	    this.player4 = new Car("player2", world, 2, 4,
+	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(3), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
 
 		
 	    camera = new OrthographicCamera();

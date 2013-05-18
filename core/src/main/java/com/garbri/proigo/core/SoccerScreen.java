@@ -49,6 +49,8 @@ public class SoccerScreen implements Screen{
 
 	private Car player1;
 	private Car player2;
+	private Car player3;
+	private Car player4;
 	private Ball ball;
 	private Goal leftGoal;
 	private Goal rightGoal;
@@ -94,6 +96,8 @@ public class SoccerScreen implements Screen{
 
 		player1.controlCar();
 		player2.controlCar();
+		player3.controlCar();
+		player4.controlCar();
 		this.ball.update();
 
 		Vector2 ballLocation = this.ball.getLocation();
@@ -182,6 +186,8 @@ public class SoccerScreen implements Screen{
 
 		createPlayer1();
 		createPlayer2();
+		createPlayer3();
+		createPlayer4();
 
 	    camera = new OrthographicCamera();
 	    camera.setToOrtho(false, screenWidth, screenHeight);
@@ -202,15 +208,29 @@ public class SoccerScreen implements Screen{
 		
 		this.player1.destroyCar();
 		this.player2.destroyCar();
+		this.player3.destroyCar();
+		this.player4.destroyCar();
 		
 		createPlayer1();
-		createPlayer2();	
+		createPlayer2();
+		createPlayer3();
+		createPlayer4();
 	}
 	
 	private void createPlayer1()
 	{
 	    this.player1 = new Car("player1", world, 2, 4,
 	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 180, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	}
+	private void createPlayer3()
+	{
+	    this.player3 = new Car("player3", world, 2, 4,
+	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 180, controls.get(2), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	}
+	private void createPlayer4()
+	{
+	    this.player4 = new Car("player4", world, 2, 4,
+	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 180, controls.get(3), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	}
 	
 	private void createPlayer2()
