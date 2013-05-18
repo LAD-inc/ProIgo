@@ -1,5 +1,7 @@
 package com.garbri.proigo.core;
 
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -47,6 +49,7 @@ private long lastRender;
 	private float worldHeight;
 	private static int PIXELS_PER_METER=10;      //how many pixels in a meter
 	
+	Controller[] controllers = new Controller[4];
 	
 	Car player1;
 	Car player2;
@@ -79,6 +82,23 @@ private long lastRender;
 		
 		spriteHelper = new SpriteHelper();
 	    
+		int i = 0;
+		
+		for(Controller controller: Controllers.getControllers()) 
+		{
+		   Gdx.app.log("Main", controller.getName());
+			   
+		   this.controllers[i] = controller;
+		   i++;
+			   
+		}
+		
+		
+		
+		if(this.controllers[0] != null)
+			
+			
+		
 	    this.player1 = new Car("player1", world, 2, 4,
 	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 120, new Controls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
@@ -95,6 +115,26 @@ private long lastRender;
 		
 		this.pitch = new Pitch(world, worldWidth, worldHeight, center);
 	 
+	}
+	
+	private Controls getPlayerControls(int player, Controller controller)
+	{
+		
+		
+		switch(player)
+		{
+			case 1:
+				if (controller == null)
+				{
+					return new Controls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT);
+				}
+				else
+				{
+					return null;
+				}
+		}
+		
+		return null;
 	}
 
 	@Override
