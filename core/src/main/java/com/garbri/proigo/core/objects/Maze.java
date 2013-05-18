@@ -22,6 +22,8 @@ public class Maze
 	public List<BoxProp> walls;
 	
 	
+	
+	
 	public Maze(World world, float worldWidth, float worldHeight, Vector2 center)
 	{
 		this.walls = new ArrayList<BoxProp>();

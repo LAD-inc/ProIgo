@@ -8,7 +8,7 @@
   <public path="resources" />
 
   <entry-point class='com.garbri.proigo.html.proigoHtml'/>
-  <set-configuration-property name="gdx.assetpath" value="C:\\dev\\git\\pro\\html/../desktop/assets,desktop/assets,../desktop/assets,../../../../desktop/assets/" />
-  <set-configuration-property name="gdx.assetoutputpath" value="C:\\dev\\git\\pro\\html\\target/proigo-html-1.0-SNAPSHOT,proigo-1.0-SNAPSHOT,src/main/webapp,./" />
+  <set-configuration-property name="gdx.assetpath" value="C:\\Users\\Brian\\Documents\\GitHub\\ProIgo\\html/../desktop/assets,desktop/assets,../desktop/assets,../../../../desktop/assets/" />
+  <set-configuration-property name="gdx.assetoutputpath" value="C:\\Users\\Brian\\Documents\\GitHub\\ProIgo\\html\\target/proigo-html-1.0-SNAPSHOT,proigo-1.0-SNAPSHOT,src/main/webapp,./" />
   
 </module>
