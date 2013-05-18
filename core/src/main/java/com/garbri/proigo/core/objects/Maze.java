@@ -1,5 +1,11 @@
 package com.garbri.proigo.core.objects;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.garbri.proigo.core.utilities.BoxProp;
@@ -13,9 +19,13 @@ public class Maze
 	private Vector2 center;
 	float winBoxSize;
 	
+	public List<BoxProp> walls;
+	
 	
 	public Maze(World world, float worldWidth, float worldHeight, Vector2 center)
 	{
+		this.walls = new ArrayList<BoxProp>();
+		
 		int numberOfPlayers = 2;
 		float gapFromOuterEdge = 1f;
 		float playerGapX = 7f;
@@ -97,6 +107,12 @@ public class Maze
 	    BoxProp topWall = new BoxProp(world,  worldWidth, 1, new Vector2 (worldWidth/2,worldHeight-gapFromOuterEdge));//top
 	    
 	    BoxProp rightWall = new BoxProp(world, 1, worldHeight, new Vector2 (worldWidth - gapFromOuterEdge, worldHeight/2));//left Wall
+	    
+	    walls.add(bottomWall);
+	    walls.add(leftWall);
+	    walls.add(topWall);
+	    walls.add(rightWall);
+	    
 	}
 	
 	private void createInnerWalls(World world, float worldWidth, float worldHeight, Vector2 center, float gapFromOuterEdge, int numberOfInnerWalls)
@@ -106,28 +122,22 @@ public class Maze
 		
 		float wallLength =  worldWidth - gapForGettingThrough;
 		
-		BoxProp wall1 = new BoxProp(world, wallLength, 1 , new Vector2 ((worldWidth - gapForGettingThrough)/2, worldHeight/5));//inner wall 1 - starts at left
+		BoxProp[] innerWalls = new BoxProp[numberOfInnerWalls];
 		
-		BoxProp wall3 = new BoxProp(world, wallLength, 1 , new Vector2 ((worldWidth - gapForGettingThrough)/2, 3*(worldHeight/5))); //inner wall 3 - starts at left
-		
-		BoxProp wall2 = new BoxProp(world, wallLength, 1 , new Vector2 (gapForGettingThrough + (wallLength/2), 2*(worldHeight/5))); //inner wall 2 - starts at right
-		
-		BoxProp wall4 = new BoxProp(world, wallLength, 1 , new Vector2 (gapForGettingThrough + (wallLength/2), 4*(worldHeight/5))); //inner wall 4 - starts at right
-		
-//		BoxProp[] walls = new BoxProp[numberOfInnerWalls];
-//		
-//		for (int i = 1; i <= numberOfInnerWalls; i++)
-//		{
-//			if (i%2 == 0)
-//			{
-//				//Should be starting from the right
-//				walls[i-1] = new BoxProp(world, wallLength, 1 , new Vector2 (gapForGettingThrough + (wallLength/2), i*(worldHeight/numberOfInnerWalls+1))); //inner wall 2 - starts at right
-//			}
-//			else
-//			{
-//				walls[i-1] = new BoxProp(world, wallLength, 1 , new Vector2 ((worldWidth - gapForGettingThrough)/2, i*(worldHeight/numberOfInnerWalls+1))); //inner wall 3 - starts at left
-//			}
-//		}
+		for (int i = 1; i <= numberOfInnerWalls; i++)
+		{
+			if (i%2 == 0)
+			{
+				//Should be starting from the right
+				innerWalls[i-1] = new BoxProp(world, wallLength, 1 , new Vector2 (gapForGettingThrough + (wallLength/2), i*(worldHeight/(numberOfInnerWalls+1)))); //inner wall 2 - starts at right
+			}
+			else
+			{
+				innerWalls[i-1] = new BoxProp(world, wallLength, 1 , new Vector2 ((worldWidth - gapForGettingThrough)/2, i*(worldHeight/(numberOfInnerWalls+1)))); //inner wall 3 - starts at left
+			}
+			
+			this.walls.add(innerWalls[i-1]);
+		}
 		
 		
 	}

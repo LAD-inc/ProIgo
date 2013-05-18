@@ -187,7 +187,7 @@ private long lastRender;
 
 	@Override
 	public void render() {	
-	    Gdx.gl.glClearColor(0, 0.5f, 0.05f, 1);
+	    Gdx.gl.glClearColor(0, 0f, 0f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
 		//boolean buttonPressed = controllers[0].getButton(buttonCode);
@@ -241,8 +241,8 @@ private long lastRender;
 		world.clearForces();
 		
 		this.spriteBatch.begin();
-		//Update Player/Car 1
 		
+		//Update Player/Car 1		
 		player1.updateSprite(spriteBatch, PIXELS_PER_METER);
 		
 		//Update Player/Car 2
