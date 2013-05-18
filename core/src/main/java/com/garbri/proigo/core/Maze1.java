@@ -14,6 +14,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.Timer;
 import com.garbri.proigo.core.controls.IControls;
 import com.garbri.proigo.core.controls.KeyboardControls;
 import com.garbri.proigo.core.controls.XboxListener;
@@ -24,6 +26,7 @@ import com.garbri.proigo.core.objects.Maze;
 import com.garbri.proigo.core.utilities.Controls;
 import com.garbri.proigo.core.utilities.SpriteHelper;
 import com.garbri.proigo.core.utilities.TextDisplayHelper;
+import com.garbri.proigo.core.utilities.TimerHelper;
 
 import com.badlogic.gdx.Screen;
 
@@ -69,6 +72,8 @@ private long lastRender;
 	
 	private Sprite finishLine;
 	
+	Timer countdownTimer;
+	
 
 	XboxListener listener;
 	private TextDisplayHelper textDisplayer;
@@ -77,6 +82,8 @@ private long lastRender;
 	private String winMessage;
 	
 	proigo game;
+	
+	private TimerHelper timer;
 	
 	public Maze1(proigo game)
 	{
@@ -95,30 +102,13 @@ private long lastRender;
 		this.maze.gameFinished = false;
 		this.displayWinMessage = false;
 		
+		this.timer.resetTimer();
+		
 	    this.player1 = new Car("player1", world, 2, 4,
 	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());	}
-	
-	private Controls getPlayerControls(int player, Controller controller)
-	{
-		
-		
-		switch(player)
-		{
-			case 1:
-				if (controller == null)
-				{
-					return new Controls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT);
-				}
-				else
-				{
-					return null;
-				}
-		}
-		
-		return null;
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());	
 	}
 
 	@Override
@@ -131,7 +121,6 @@ private long lastRender;
 	    Gdx.gl.glClearColor(0, 0f, 0f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		//boolean buttonPressed = controllers[0].getButton(buttonCode);
 
 	    // tell the camera to update its matrices.
 	    camera.update();
@@ -153,10 +142,6 @@ private long lastRender;
 		player1.controlCar();
 		player2.controlCar();
 		this.ball.update();
-		
-		Vector2 ballLocation = this.ball.getLocation();
-		//this.pitch.leftGoal.checkForGoal(ballLocation, 0f);
-		//this.pitch.rightGoal.checkForGoal(ballLocation, 0f);
 		
 		if (!this.displayWinMessage)
 		{
@@ -206,6 +191,9 @@ private long lastRender;
 			textDisplayer.font.draw(spriteBatch, this.winMessage , (center.x * PIXELS_PER_METER) - (this.winMessage.length() * 3) , center.y * PIXELS_PER_METER);
 		}
 		
+		String temp = this.timer.getElapsedTimeAsString();
+
+		textDisplayer.font.draw(spriteBatch, temp , (center.x * PIXELS_PER_METER) - (temp.length() * 3) ,(worldHeight-1f) * PIXELS_PER_METER);
 		
 		this.spriteBatch.end();
 		
@@ -298,6 +286,11 @@ private long lastRender;
 		this.maze = new Maze(world, worldWidth, worldHeight, center);
 		
 		this.displayWinMessage = false;
+		
+		this.timer = new TimerHelper();		
+		
+		
+		
 		
 	}
 
