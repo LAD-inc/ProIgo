@@ -59,6 +59,8 @@ private long lastRender;
 	Goal leftGoal;
 	Goal rightGoal;
 	
+	ArrayList<Cont> conts =  new ArrayList<Cont>() ;
+	
 	public Maze maze;
 	
 	Vector2 center;
@@ -96,7 +98,6 @@ private long lastRender;
 		int i = 0;
 		
 		
-		ArrayList<Cont> conts = new ArrayList<Cont>();
 		for(Controller controller: Controllers.getControllers()) 
 		{
 		   Gdx.app.log("Main", controller.getName());
@@ -117,7 +118,7 @@ private long lastRender;
 	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], center.y), (float) (Math.PI + Math.PI/2), 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
 
 		
 	    camera = new OrthographicCamera();
@@ -148,12 +149,11 @@ private long lastRender;
 		this.maze.gameFinished = false;
 		this.displayWinMessage = false;
 		
-		this.player1 = new Car("player1", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 120, new Controls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
-	
-		this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 120, new Controls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
-	}
+	    this.player1 = new Car("player1", world, 2, 4,
+	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    
+	    this.player2 = new Car("player2", world, 2, 4,
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());	}
 	
 	private Controls getPlayerControls(int player, Controller controller)
 	{
