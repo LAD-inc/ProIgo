@@ -4,18 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.garbri.proigo.core.proigo;
+import com.garbri.proigo.core.controls.Cont;
 import com.garbri.proigo.core.utilities.Controls;
 import com.garbri.proigo.core.utilities.SpriteHelper;
 
@@ -37,12 +34,12 @@ public class Car {
 	public static final int ACC_ACCELERATE=1;
 	public static final int ACC_BRAKE=2;
 	
-	Controls controls;
+	Cont controls;
 	public Sprite sprite;
 	
 	
 	public Car(String playerName, World world, float width, float length, Vector2 position,
-			float angle, float power, float maxSteerAngle, float maxSpeed, Controls controls, Sprite carSprite, Sprite wheelSprite) {
+			float angle, float power, float maxSteerAngle, float maxSpeed, Cont controls, Sprite carSprite, Sprite wheelSprite) {
 		super();
 		
 		this.playerName = playerName;
@@ -107,16 +104,16 @@ public class Car {
 	
 	public void controlCar()
 	{
-		if (Gdx.input.isKeyPressed(this.controls.controlUp))
+		if (controls.getAccelerate())
 			this.accelerate = this.ACC_ACCELERATE;
-		else if (Gdx.input.isKeyPressed(this.controls.controlDown))
+		else if (controls.getBrake())
 			this.accelerate = this.ACC_BRAKE;
 		else
 			this.accelerate = this.ACC_NONE;
 		
-		if (Gdx.input.isKeyPressed(this.controls.controlLeft))
+		if (controls.getLeft())
 			this.steer = this.STEER_LEFT;
-		else if (Gdx.input.isKeyPressed(this.controls.controlRight))
+		else if (controls.getRight())
 			this.steer = this.STEER_RIGHT;
 		else
 			this.steer = this.STEER_NONE;

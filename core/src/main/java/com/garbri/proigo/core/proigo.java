@@ -1,27 +1,24 @@
 package com.garbri.proigo.core;
 
+import java.util.ArrayList;
+
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.garbri.proigo.core.controls.Cont;
+import com.garbri.proigo.core.controls.MappedController;
 import com.garbri.proigo.core.objects.Ball;
 import com.garbri.proigo.core.objects.Car;
 import com.garbri.proigo.core.objects.Goal;
 import com.garbri.proigo.core.objects.Pitch;
-import com.garbri.proigo.core.utilities.BoxProp;
 import com.garbri.proigo.core.utilities.Controls;
 import com.garbri.proigo.core.utilities.SpriteHelper;
 
@@ -61,6 +58,8 @@ private long lastRender;
 	
 	private SpriteHelper spriteHelper;
 	
+	MappedController listener;
+	
 	@Override
 	public void create() {		
 //		screenWidth = Gdx.graphics.getWidth();
@@ -84,26 +83,26 @@ private long lastRender;
 	    
 		int i = 0;
 		
+		
+		ArrayList<Cont> conts = new ArrayList<Cont>();
 		for(Controller controller: Controllers.getControllers()) 
 		{
 		   Gdx.app.log("Main", controller.getName());
-			   
+		   MappedController listener = new MappedController();
+		   controller.addListener(listener);
+		   listener.getControls();
+		   conts.add(listener.getControls());
 		   this.controllers[i] = controller;
 		   i++;
 			   
 		}
 		
 		
-		
-		if(this.controllers[0] != null)
-			
-			
-		
 	    this.player1 = new Car("player1", world, 2, 4,
-	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 120, new Controls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
-	    		new Vector2((worldWidth -15f), center.y), (float) (Math.PI + Math.PI/2), 60, 20, 120, new Controls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
+	    		new Vector2((worldWidth -15f), center.y), (float) (Math.PI + Math.PI/2), 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
 		
 	    camera = new OrthographicCamera();
 	    camera.setToOrtho(false, screenWidth, screenHeight);
@@ -117,25 +116,6 @@ private long lastRender;
 	 
 	}
 	
-	private Controls getPlayerControls(int player, Controller controller)
-	{
-		
-		
-		switch(player)
-		{
-			case 1:
-				if (controller == null)
-				{
-					return new Controls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT);
-				}
-				else
-				{
-					return null;
-				}
-		}
-		
-		return null;
-	}
 
 	@Override
 	public void dispose() {
@@ -146,6 +126,8 @@ private long lastRender;
 	public void render() {	
 	    Gdx.gl.glClearColor(0, 0.5f, 0.05f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		//boolean buttonPressed = controllers[0].getButton(buttonCode);
 
 	    // tell the camera to update its matrices.
 	    camera.update();
@@ -159,6 +141,7 @@ private long lastRender;
 		Vector2 ballLocation = this.ball.getLocation();
 		this.pitch.leftGoal.checkForGoal(ballLocation, 0f);
 		this.pitch.rightGoal.checkForGoal(ballLocation, 0f);
+		
 		
 		
 		/**
