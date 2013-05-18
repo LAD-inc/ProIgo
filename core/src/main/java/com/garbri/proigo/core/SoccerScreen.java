@@ -9,6 +9,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -76,6 +77,8 @@ public class SoccerScreen implements Screen{
 	private TimerHelper timer;
 	
 	private TextDisplayHelper textDisplayer;
+	
+	private Sprite pitchSprite;
 	
 	ArrayList<IControls> controls =  new ArrayList<IControls>();
 	Controller[] controllers = new Controller[4];
@@ -153,6 +156,9 @@ public class SoccerScreen implements Screen{
 
 		this.spriteBatch.begin();
 		//Update Player/Car 1
+		
+		//this.pitchSprite.setPosition(0,0);
+		//this.pitchSprite.draw(spriteBatch);
 
 		player1.updateSprite(spriteBatch, PIXELS_PER_METER);
 
@@ -258,7 +264,9 @@ public class SoccerScreen implements Screen{
 		
 		textDisplayer = new TextDisplayHelper();
 		
-		this.timer = new TimerHelper();		
+		this.timer = new TimerHelper();	
+		
+		this.pitchSprite = spriteHelper.getPitchSprite(screenWidth , screenHeight);
 	}
 	
 	private void resetGame()
