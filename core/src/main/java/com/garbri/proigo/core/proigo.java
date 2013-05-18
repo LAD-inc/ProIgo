@@ -9,6 +9,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -64,6 +65,8 @@ private long lastRender;
 	
 	private SpriteHelper spriteHelper;
 	
+	private Sprite finishLine;
+	
 
 	XboxListener listener;
 	private TextDisplayHelper textDisplayer;
@@ -92,6 +95,8 @@ private long lastRender;
 		
 		spriteHelper = new SpriteHelper();
 	    
+		this.finishLine = spriteHelper.getFinishLineSprite(20, (int) (worldHeight/5)*PIXELS_PER_METER);
+		
 		int i = 0;
 		
 		
@@ -241,6 +246,9 @@ private long lastRender;
 		world.clearForces();
 		
 		this.spriteBatch.begin();
+		
+		this.finishLine.setPosition((this.center.x * PIXELS_PER_METER) - this.finishLine.getWidth()/2, (this.center.y * PIXELS_PER_METER) - this.finishLine.getHeight()/2);
+		this.finishLine.draw(spriteBatch);
 		
 		//Update Player/Car 1		
 		player1.updateSprite(spriteBatch, PIXELS_PER_METER);

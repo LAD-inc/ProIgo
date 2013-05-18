@@ -12,12 +12,14 @@ public class SpriteHelper {
 	private Texture carTexture;
 	private Texture wheelTexture;
 	private Texture ballTexture;
+	private Texture finishLineTexture;
 	
 	public SpriteHelper()
 	{
 		this.carTexture = new Texture(Gdx.files.internal("NewCars.png"));
 		this.wheelTexture = new Texture(Gdx.files.internal("Wheel.png"));
 		this.ballTexture = new Texture(Gdx.files.internal("Ball.png"));
+		this.finishLineTexture = new Texture(Gdx.files.internal("finishLine.png"));
 	}
 	
 	public static void updateSprite(Sprite sprite, SpriteBatch spriteBatch, int PIXELS_PER_METER, Body body)
@@ -63,6 +65,16 @@ public class SpriteHelper {
 							4, //Width
 							8 //Height
 							);
+	}
+	
+	public Sprite getFinishLineSprite(int width, int height)
+	{
+		return new Sprite(this.finishLineTexture,
+				0,  //X
+				0,  //Y
+				width, //Width
+				height //Height
+				);
 	}
 	
 }
