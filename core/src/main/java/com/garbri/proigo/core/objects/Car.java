@@ -12,8 +12,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.garbri.proigo.core.controls.Cont;
-import com.garbri.proigo.core.utilities.Controls;
+import com.garbri.proigo.core.controls.IControls;
+import com.garbri.proigo.core.controls.KeyboardControls;
+import com.garbri.proigo.core.controls.XboxControls;
 import com.garbri.proigo.core.utilities.SpriteHelper;
 
 public class Car {
@@ -34,12 +35,12 @@ public class Car {
 	public static final int ACC_ACCELERATE=1;
 	public static final int ACC_BRAKE=2;
 	
-	Cont controls;
+	IControls controls;
 	public Sprite sprite;
 	
 	
 	public Car(String playerName, World world, float width, float length, Vector2 position,
-			float angle, float power, float maxSteerAngle, float maxSpeed, Cont controls, Sprite carSprite, Sprite wheelSprite) {
+			float angle, float power, float maxSteerAngle, float maxSpeed, IControls controls, Sprite carSprite, Sprite wheelSprite) {
 		super();
 		
 		this.playerName = playerName;
@@ -104,20 +105,38 @@ public class Car {
 	
 	public void controlCar()
 	{
-		if (controls.getAccelerate())
+		if(controls instanceof XboxControls){
+			XboxControls xboxcontrols = (XboxControls)controls;
+			
+		if (xboxcontrols.getAccelerate())
 			this.accelerate = this.ACC_ACCELERATE;
-		else if (controls.getBrake())
+		else if (xboxcontrols.getBrake())
 			this.accelerate = this.ACC_BRAKE;
 		else
 			this.accelerate = this.ACC_NONE;
 		
-		if (controls.getLeft())
+		if (xboxcontrols.getLeft())
 			this.steer = this.STEER_LEFT;
-		else if (controls.getRight())
+		else if (xboxcontrols.getRight())
 			this.steer = this.STEER_RIGHT;
 		else
 			this.steer = this.STEER_NONE;
-		
+		} else if (controls instanceof KeyboardControls){
+			KeyboardControls keyboardControls = (KeyboardControls)controls; 
+			if (Gdx.input.isKeyPressed(keyboardControls.controlUp))
+				this.accelerate = this.ACC_ACCELERATE;
+			else if (Gdx.input.isKeyPressed(keyboardControls.controlDown))
+				this.accelerate = this.ACC_BRAKE;
+			else
+				this.accelerate = this.ACC_NONE;
+
+			if (Gdx.input.isKeyPressed(keyboardControls.controlLeft))
+				this.steer = this.STEER_LEFT;
+			else if (Gdx.input.isKeyPressed(keyboardControls.controlRight))
+				this.steer = this.STEER_RIGHT;
+			else
+				this.steer = this.STEER_NONE;
+		}
 		this.update(Gdx.app.getGraphics().getDeltaTime());
 	}
 

@@ -9,20 +9,17 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.garbri.proigo.core.controls.Cont;
-import com.garbri.proigo.core.controls.MappedController;
+import com.garbri.proigo.core.controls.IControls;
+import com.garbri.proigo.core.controls.KeyboardControls;
+import com.garbri.proigo.core.controls.XboxListener;
 import com.garbri.proigo.core.objects.Ball;
 import com.garbri.proigo.core.objects.Car;
 import com.garbri.proigo.core.objects.Goal;
 import com.garbri.proigo.core.objects.Maze;
-import com.garbri.proigo.core.objects.Pitch;
 import com.garbri.proigo.core.utilities.Controls;
 import com.garbri.proigo.core.utilities.SpriteHelper;
 import com.garbri.proigo.core.utilities.TextDisplayHelper;
@@ -59,7 +56,7 @@ private long lastRender;
 	Goal leftGoal;
 	Goal rightGoal;
 	
-	ArrayList<Cont> conts =  new ArrayList<Cont>() ;
+	ArrayList<IControls> controls =  new ArrayList<IControls>() ;
 	
 	public Maze maze;
 	
@@ -68,7 +65,7 @@ private long lastRender;
 	private SpriteHelper spriteHelper;
 	
 
-	MappedController listener;
+	XboxListener listener;
 	private TextDisplayHelper textDisplayer;
 	
 	private Boolean displayWinMessage = false;
@@ -101,24 +98,32 @@ private long lastRender;
 		for(Controller controller: Controllers.getControllers()) 
 		{
 		   Gdx.app.log("Main", controller.getName());
-		   MappedController listener = new MappedController();
+		   XboxListener listener = new XboxListener();
 		   controller.addListener(listener);
 		   listener.getControls();
-		   conts.add(listener.getControls());
+		   controls.add(listener.getControls());
 		   this.controllers[i] = controller;
 		   i++;
 			   
 		}
+			
+			if(controls.size() == 1){
+				controls.add( new KeyboardControls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT));
+			}else if(controls.size() == 0){
+				controls.add( new KeyboardControls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT));
+				controls.add( new KeyboardControls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D));
+			}
+			
 		
-
+		
 		textDisplayer = new TextDisplayHelper();
 		this.maze = new Maze(world, worldWidth, worldHeight, center);
 
 	    this.player1 = new Car("player1", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 120, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 120, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
 
 		
 	    camera = new OrthographicCamera();
@@ -150,10 +155,10 @@ private long lastRender;
 		this.displayWinMessage = false;
 		
 	    this.player1 = new Car("player1", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
+	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 120, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
 	    
 	    this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 120, conts.get(0), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());	}
+	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 120, controls.get(1), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());	}
 	
 	private Controls getPlayerControls(int player, Controller controller)
 	{
