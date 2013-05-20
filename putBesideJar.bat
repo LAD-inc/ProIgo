@@ -1,1 +1,0 @@
-call "%JAVA_HOME%/bin/java" -jar desktop/target/proigo-desktop-1.0-SNAPSHOT-jar-with-dependencies.jar
