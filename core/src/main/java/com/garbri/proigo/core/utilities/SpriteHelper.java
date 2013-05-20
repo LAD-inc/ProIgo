@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.garbri.proigo.core.objects.Player;
 
 public class SpriteHelper {
 	
@@ -21,7 +22,7 @@ public class SpriteHelper {
 		this.wheelTexture = new Texture(Gdx.files.internal("Wheel.png"));
 		this.ballTexture = new Texture(Gdx.files.internal("Ball.png"));
 		this.finishLineTexture = new Texture(Gdx.files.internal("finishLine.png"));
-		this.pitch = new Texture(Gdx.files.internal("newPitch.png"));
+		this.pitch = new Texture(Gdx.files.internal("pitch.png"));
 	}
 	
 	public static void updateSprite(Sprite sprite, SpriteBatch spriteBatch, int PIXELS_PER_METER, Body body)
@@ -45,6 +46,23 @@ public class SpriteHelper {
 		//limit to max number of cars
 		if(colour < 0 || colour > 3)
 			colour = 0;
+		
+		return new Sprite(carTexture,(20*colour),40,20, 40);
+	}
+	
+	public Sprite getTeamCarSprite(int playerNumber, Player.team team)
+	{
+		int colour = playerNumber/2;
+		
+		switch(team)
+		{
+			case blue:
+				//Do nothing
+				break;
+			case red:
+				colour = colour + 2;
+				break;
+		}
 		
 		return new Sprite(carTexture,(20*colour),40,20, 40);
 	}

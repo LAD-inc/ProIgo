@@ -1,4 +1,4 @@
-package com.garbri.proigo.core.objects;
+package com.garbri.proigo.core.vehicles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,16 +8,15 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.garbri.proigo.core.controls.IControls;
 import com.garbri.proigo.core.controls.KeyboardControls;
 import com.garbri.proigo.core.controls.XboxControls;
+import com.garbri.proigo.core.objects.Player;
+import com.garbri.proigo.core.objects.Wheel;
 import com.garbri.proigo.core.utilities.SpriteHelper;
 
-public class Car {
+public class Vehicle {
+
 	public Body body;
 	float width, length, angle, maxSteerAngle, maxSpeed, power;
 	float wheelAngle;
@@ -25,7 +24,7 @@ public class Car {
 	public Vector2 position;
 	public List<Wheel> wheels;
 	
-	public String playerName;
+	public Player player;
 	
 	public static final int STEER_NONE=0;
 	public static final int STEER_RIGHT=1;
@@ -35,57 +34,8 @@ public class Car {
 	public static final int ACC_ACCELERATE=1;
 	public static final int ACC_BRAKE=2;
 	
-	IControls controls;
 	public Sprite sprite;
 	
-	
-	public Car(String playerName, World world, float width, float length, Vector2 position,
-			float angle, float power, float maxSteerAngle, float maxSpeed, IControls controls, Sprite carSprite, Sprite wheelSprite) {
-		super();
-		
-		this.playerName = playerName;
-		
-		this.steer = this.STEER_NONE;
-		this.accelerate = this.ACC_NONE;
-		
-		this.width = width;
-		this.length = length;
-		this.angle = angle;
-		this.maxSteerAngle = maxSteerAngle;
-		this.maxSpeed = maxSpeed;
-		this.power = power;
-		this.position = position;
-		this.wheelAngle = 0;
-		
-		//init body 
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyDef.BodyType.DynamicBody;
-		bodyDef.position.set(position);
-		bodyDef.angle = angle;
-		this.body = world.createBody(bodyDef);
-		
-		//init shape
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.density = 1.0f;
-		fixtureDef.friction = 0.6f; //friction when rubbing against other shapes
-		fixtureDef.restitution  = 0.4f; //amount of force feedback when hitting something. >0 makes the car bounce off, it's fun!
-		PolygonShape carShape = new PolygonShape();
-		carShape.setAsBox(this.width / 2, this.length / 2);
-		fixtureDef.shape = carShape;
-		this.body.createFixture(fixtureDef);
-		
-		//initialize wheels
-		this.wheels = new ArrayList<Wheel>();
-		this.wheels.add(new Wheel(world, this, -1f, -1.2f, 0.4f, 0.8f, true,  true, wheelSprite)); //top left
-		this.wheels.add(new Wheel(world, this, 1f, -1.2f, 0.4f, 0.8f, true,  true, wheelSprite)); //top right
-		this.wheels.add(new Wheel(world, this, -1f, 1.2f, 0.4f, 0.8f, false,  false, wheelSprite)); //back left
-		this.wheels.add(new Wheel(world, this, 1f, 1.2f, 0.4f, 0.8f, false,  false, wheelSprite)); //back right
-		
-		
-		this.controls = controls;
-		
-		this.sprite = carSprite;
-	}
 	
 	public List<Wheel> getPoweredWheels () {
 		List<Wheel> poweredWheels = new ArrayList<Wheel>();
@@ -103,39 +53,52 @@ public class Car {
 		return this.body.getLocalVector(this.body.getLinearVelocityFromLocalPoint(new Vector2(0, 0)));
 	}
 	
-	public void controlCar()
+	private void xboxControlRead(XboxControls xboxcontrols)
 	{
-		if(controls instanceof XboxControls){
-			XboxControls xboxcontrols = (XboxControls)controls;
-			
+		//Read Acceleration/Braking
 		if (xboxcontrols.getAccelerate())
-			this.accelerate = this.ACC_ACCELERATE;
+			this.accelerate = Vehicle.ACC_ACCELERATE;
 		else if (xboxcontrols.getBrake())
-			this.accelerate = this.ACC_BRAKE;
+			this.accelerate = Vehicle.ACC_BRAKE;
 		else
-			this.accelerate = this.ACC_NONE;
+			this.accelerate = Vehicle.ACC_NONE;
 		
+		// Read Stearing Command
 		if (xboxcontrols.getLeft())
-			this.steer = this.STEER_LEFT;
+			this.steer = Vehicle.STEER_LEFT;
 		else if (xboxcontrols.getRight())
-			this.steer = this.STEER_RIGHT;
+			this.steer = Vehicle.STEER_RIGHT;
 		else
-			this.steer = this.STEER_NONE;
-		} else if (controls instanceof KeyboardControls){
-			KeyboardControls keyboardControls = (KeyboardControls)controls; 
-			if (Gdx.input.isKeyPressed(keyboardControls.controlUp))
-				this.accelerate = this.ACC_ACCELERATE;
-			else if (Gdx.input.isKeyPressed(keyboardControls.controlDown))
-				this.accelerate = this.ACC_BRAKE;
-			else
-				this.accelerate = this.ACC_NONE;
+			this.steer = Vehicle.STEER_NONE;
+	}
+	
+	private void keyboardControlRead(KeyboardControls keyboardControls)
+	{
+		if (Gdx.input.isKeyPressed(keyboardControls.controlUp))
+			this.accelerate = Vehicle.ACC_ACCELERATE;
+		else if (Gdx.input.isKeyPressed(keyboardControls.controlDown))
+			this.accelerate = Vehicle.ACC_BRAKE;
+		else
+			this.accelerate = Vehicle.ACC_NONE;
 
-			if (Gdx.input.isKeyPressed(keyboardControls.controlLeft))
-				this.steer = this.STEER_LEFT;
-			else if (Gdx.input.isKeyPressed(keyboardControls.controlRight))
-				this.steer = this.STEER_RIGHT;
-			else
-				this.steer = this.STEER_NONE;
+		if (Gdx.input.isKeyPressed(keyboardControls.controlLeft))
+			this.steer = Vehicle.STEER_LEFT;
+		else if (Gdx.input.isKeyPressed(keyboardControls.controlRight))
+			this.steer = Vehicle.STEER_RIGHT;
+		else
+			this.steer = Vehicle.STEER_NONE;
+	}
+	
+	public void controlVehicle()
+	{
+		if(this.player.controls instanceof XboxControls)
+		{
+			xboxControlRead((XboxControls)this.player.controls);
+		}	
+		else if (this.player.controls instanceof KeyboardControls)
+		{
+			keyboardControlRead((KeyboardControls)this.player.controls); 
+
 		}
 		this.update(Gdx.app.getGraphics().getDeltaTime());
 	}
@@ -167,7 +130,7 @@ public class Car {
 	    this.body.setLinearVelocity(velocity);
 	}
 	
-	public void destroyCar()
+	public void destroyVehicle()
 	{
 		World world = this.body.getWorld();
 		
@@ -192,9 +155,9 @@ public class Car {
         //calculate the change in wheel's angle for this update
         float incr=(this.maxSteerAngle) * deltaTime * 5;
         
-        if(this.steer==this.STEER_LEFT){
+        if(this.steer==Vehicle.STEER_LEFT){
             this.wheelAngle=Math.min(Math.max(this.wheelAngle, 0)+incr, this.maxSteerAngle); //increment angle without going over max steer
-        }else if(this.steer==this.STEER_RIGHT){
+        }else if(this.steer==Vehicle.STEER_RIGHT){
             this.wheelAngle=Math.max(Math.min(this.wheelAngle, 0)-incr, -this.maxSteerAngle); //decrement angle without going over max steer
         }else{
             this.wheelAngle=0;        
@@ -209,14 +172,14 @@ public class Car {
         Vector2 baseVector; //vector pointing in the direction force will be applied to a wheel ; relative to the wheel.
         
         //if accelerator is pressed down and speed limit has not been reached, go forwards
-        if((this.accelerate==this.ACC_ACCELERATE) && (this.getSpeedKMH() < this.maxSpeed)){
+        if((this.accelerate==Vehicle.ACC_ACCELERATE) && (this.getSpeedKMH() < this.maxSpeed)){
         	
         	if(this.getLocalVelocity().y<20)
         		baseVector= new Vector2(0, -2.2f);
         	else
         		baseVector= new Vector2(0, -1.1f);
         }
-        else if(this.accelerate==this.ACC_BRAKE){
+        else if(this.accelerate==Vehicle.ACC_BRAKE){
             //braking, but still moving forwards - increased force
             if(this.getLocalVelocity().y<0)
             	baseVector= new Vector2(0f, 2f);
@@ -224,7 +187,7 @@ public class Car {
             else 
             	baseVector=new Vector2(0f, 1f);
         }
-        else if (this.accelerate==this.ACC_NONE ) {
+        else if (this.accelerate==Vehicle.ACC_NONE ) {
         	//slow down if not accelerating
         	baseVector=new Vector2(0, 0);
             if (this.getSpeedKMH()<7)
@@ -263,5 +226,5 @@ public class Car {
         	wheel.updateSprite(spriteBatch, PIXELS_PER_METER);
         }
 	}
-	
+
 }

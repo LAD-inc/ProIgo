@@ -1,11 +1,7 @@
 package com.garbri.proigo.core.objects;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.garbri.proigo.core.utilities.BoxProp;
@@ -23,40 +19,70 @@ public class Maze
 	
 	public int numberOfInnerWalls;
 	
+	private float gapFromOuterEdge = 1f;
+	private float playerGapX = 7f;
+	private float playerGapY = 7f;
+	
+	private float worldWidth;
+	private float worldHeight;
 	
 	
 	
-	public Maze(World world, float worldWidth, float worldHeight, Vector2 center)
+	
+	public Maze(World world, float worldWidth, float worldHeight, Vector2 center, int numInnerWalls)
 	{
 		this.walls = new ArrayList<BoxProp>();
 		
-		numberOfInnerWalls = 6;
+		this.numberOfInnerWalls = numInnerWalls;
 		
-		int numberOfPlayers = 2;
-		float gapFromOuterEdge = 1f;
-		float playerGapX = 7f;
-		float playerGapY = 7f;
+
 		
 		this.winBoxSize = worldHeight/(numberOfInnerWalls + 1);
 		
 		this.center = center;
 		
 		
-		playerStartPoint = new Vector2[numberOfPlayers];
+		this.worldHeight = worldHeight;
+		this.worldWidth = worldWidth;
 		
 		createOuterWalls(world, worldWidth, worldHeight, center, gapFromOuterEdge);
 		
 		//make it even!
 		createInnerWalls(world, worldWidth, worldHeight, center, gapFromOuterEdge, numberOfInnerWalls);
 		
-		//BottomLeft
-		playerStartPoint[0] = new Vector2 (gapFromOuterEdge + playerGapX , gapFromOuterEdge + playerGapY);
-		
-		//Top Right
-		playerStartPoint[1] = new Vector2 (worldWidth - (gapFromOuterEdge + playerGapX) , worldHeight - (gapFromOuterEdge + playerGapY));
 		
 		
 		
+	}
+	
+	public Vector2 getPlayerStartPoint(int playerNumber)
+	{
+		//Only two staritng spaces but we want to alternate
+		int temp = playerNumber%4;
+		
+		if (temp == 0 || temp == 3)
+		{
+			return new Vector2 (gapFromOuterEdge + playerGapX , gapFromOuterEdge + playerGapY);
+		}
+		else
+		{
+			return new Vector2 (worldWidth - (gapFromOuterEdge + playerGapX) , worldHeight - (gapFromOuterEdge + playerGapY));
+		}
+	}
+	
+	public float getPlayerStartAngle(int playerNumber)
+	{
+		//Only two staritng spaces but we want to alternate
+		int temp = playerNumber%4;
+		
+		if (temp == 0 || temp == 3)
+		{
+			return (float) Math.PI/2;
+		}
+		else
+		{
+			return (float) (Math.PI + Math.PI/2);
+		}
 	}
 	
 	public boolean checkForWin(Vector2 carCenter, String playerName)

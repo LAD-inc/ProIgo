@@ -1,6 +1,7 @@
 package com.garbri.proigo.core;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -18,12 +19,13 @@ import com.garbri.proigo.core.controls.IControls;
 import com.garbri.proigo.core.controls.KeyboardControls;
 import com.garbri.proigo.core.controls.XboxListener;
 import com.garbri.proigo.core.objects.Ball;
-import com.garbri.proigo.core.objects.Car;
 import com.garbri.proigo.core.objects.Goal;
 import com.garbri.proigo.core.objects.Pitch;
 import com.garbri.proigo.core.utilities.SpriteHelper;
 import com.garbri.proigo.core.utilities.TextDisplayHelper;
 import com.garbri.proigo.core.utilities.TimerHelper;
+import com.garbri.proigo.core.vehicles.Car;
+import com.garbri.proigo.core.vehicles.Vehicle;
 
 public class SoccerScreen implements Screen{
 
@@ -49,14 +51,7 @@ public class SoccerScreen implements Screen{
 	private float worldHeight;
 	private static int PIXELS_PER_METER=10;      //how many pixels in a meter
 	
-
-	private Car player1;
-	private Car player2;
-	private Car player3;
-	private Car player4;
 	private Ball ball;
-	private Goal leftGoal;
-	private Goal rightGoal;
 	
 	public float ballOffsetX; 
 	
@@ -80,13 +75,32 @@ public class SoccerScreen implements Screen{
 	
 	private Sprite pitchSprite;
 	
-	ArrayList<IControls> controls =  new ArrayList<IControls>();
-	Controller[] controllers = new Controller[4];
+	private List<Car> vehicles;
 	
 	public SoccerScreen(proigo game)
 	{
 		this.game = game;
 		
+		this.screenWidth = 1400;
+		this.screenHeight = 900;
+		
+		this.worldWidth = this.screenWidth / PIXELS_PER_METER;
+		this.worldHeight = this.screenHeight / PIXELS_PER_METER;
+		
+		this.center = new Vector2(worldWidth/2, worldHeight/2);
+		
+		this.spriteHelper = new SpriteHelper();
+		
+		this.textDisplayer = new TextDisplayHelper();
+		
+	    this.camera = new OrthographicCamera();
+	    this.camera.setToOrtho(false, this.screenWidth, this.screenHeight);
+	    
+	    this.debugRenderer = new Box2DDebugRenderer();
+	    
+	    this.pitchSprite = spriteHelper.getPitchSprite(screenWidth , screenHeight);
+		
+		this.vehicles = new ArrayList<Car>();
 	}
 	
 	@Override
@@ -115,10 +129,10 @@ public class SoccerScreen implements Screen{
 
 		if (this.timer.countDownTimer == 0)
 		{
-			player1.controlCar();
-			player2.controlCar();
-			player3.controlCar();
-			player4.controlCar();
+			for (Vehicle vehicle:this.vehicles)
+			{
+				vehicle.controlVehicle();
+			}
 		}
 		
 		this.ball.update();
@@ -157,17 +171,13 @@ public class SoccerScreen implements Screen{
 		this.spriteBatch.begin();
 		//Update Player/Car 1
 		
-		//this.pitchSprite.setPosition(0,0);
-		//this.pitchSprite.draw(spriteBatch);
+		this.pitchSprite.setPosition(0,0);
+		this.pitchSprite.draw(spriteBatch);
 
-		player1.updateSprite(spriteBatch, PIXELS_PER_METER);
-
-		//Update Player/Car 2
-		player2.updateSprite(spriteBatch, PIXELS_PER_METER);
-		
-		this.player3.updateSprite(spriteBatch, PIXELS_PER_METER);
-		
-		this.player4.updateSprite(spriteBatch, PIXELS_PER_METER);
+		for (Vehicle vehicle:this.vehicles)
+		{
+			vehicle.updateSprite(spriteBatch, PIXELS_PER_METER);
+		}
 		
 		String blueTeamString = String.valueOf(this.blueTeamScore);
 		String redTeamString = String.valueOf(this.redTeamScore);
@@ -194,7 +204,7 @@ public class SoccerScreen implements Screen{
 		 * Draw this last, so we can see the collision boundaries on top of the
 		 * sprites and map.
 		 */
-		debugRenderer.render(world, camera.combined.scale(PIXELS_PER_METER,PIXELS_PER_METER,PIXELS_PER_METER));
+		//debugRenderer.render(world, camera.combined.scale(PIXELS_PER_METER,PIXELS_PER_METER,PIXELS_PER_METER));
 		
 	}
 
@@ -208,65 +218,19 @@ public class SoccerScreen implements Screen{
 	
 	@Override
 	public void show() {
-		screenWidth = 1400;
-		screenHeight = 900;
 
-		worldWidth = screenWidth / PIXELS_PER_METER;
-		worldHeight = screenHeight / PIXELS_PER_METER;
-
-		int i = 0;
+		spriteBatch = new SpriteBatch();
 		
-		
-		for(Controller controller: Controllers.getControllers()) 
-		{
-		   Gdx.app.log("Main", controller.getName());
-		   XboxListener listener = new XboxListener();
-		   controller.addListener(listener);
-		   listener.getControls();
-		   controls.add(listener.getControls());
-		   this.controllers[i] = controller;
-		   i++;
-			   
-		}
-			
-				controls.add( new KeyboardControls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT));
-				controls.add( new KeyboardControls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D));
-				controls.add( new KeyboardControls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT));
-				controls.add( new KeyboardControls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D));
-		
-		
-		//worldWidth = 800;
-		//worldHeight = 600;
-
-		//Box2d World init
-		this.center = new Vector2(worldWidth/2, worldHeight/2);
-
-		world = new World(new Vector2(0.0f, 0.0f), true);	
-
-		spriteHelper = new SpriteHelper();
-
-		createPlayer1();
-		createPlayer2();
-		createPlayer3();
-		createPlayer4();
-
-	    camera = new OrthographicCamera();
-	    camera.setToOrtho(false, screenWidth, screenHeight);
-	    spriteBatch = new SpriteBatch();		
-
-		debugRenderer = new Box2DDebugRenderer();
-
+		world = new World(new Vector2(0.0f, 0.0f), true);
+		this.pitch = new Pitch(world, worldWidth, worldHeight, center);
 		this.ball = new Ball(world, center.x + this.ballOffsetX, center.y, spriteHelper.getBallSprite());
 
-		this.pitch = new Pitch(world, worldWidth, worldHeight, center);
-		
+		createAllCars();
+
 		this.displayWinMessage = false;
-		
-		textDisplayer = new TextDisplayHelper();
 		
 		this.timer = new TimerHelper();	
 		
-		this.pitchSprite = spriteHelper.getPitchSprite(screenWidth , screenHeight);
 	}
 	
 	private void resetGame()
@@ -274,15 +238,12 @@ public class SoccerScreen implements Screen{
 		dispose();
 		spriteBatch = new SpriteBatch();
 		
-		this.player1.destroyCar();
-		this.player2.destroyCar();
-		this.player3.destroyCar();
-		this.player4.destroyCar();
+		for (Vehicle vehicle:this.vehicles)
+		{
+			vehicle.destroyVehicle();
+		}
 		
-		createPlayer1();
-		createPlayer2();
-		createPlayer3();
-		createPlayer4();
+		createAllCars();
 		
 		this.displayWinMessage = false;
 		
@@ -292,26 +253,22 @@ public class SoccerScreen implements Screen{
 		ballOffsetX = 0f;
 	}
 	
-	private void createPlayer1()
+	private void createAllCars()
 	{
-	    this.player1 = new Car("player1", world, 2, 4,
-	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 180, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
-	}
-	private void createPlayer3()
-	{
-	    this.player3 = new Car("player3", world, 2, 4,
-	    		new Vector2(15f, center.y), (float) Math.PI/2, 60, 20, 180, controls.get(2), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
-	}
-	private void createPlayer4()
-	{
-	    this.player4 = new Car("player4", world, 2, 4,
-	    		new Vector2((worldWidth -15f), center.y), (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(3), spriteHelper.getCarSprite(3), spriteHelper.getWheelSprite());
-	}
-	
-	private void createPlayer2()
-	{
-		this.player2 = new Car("player2", world, 2, 4,
-				new Vector2((worldWidth -15f), center.y), (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(2), spriteHelper.getWheelSprite());
+		Car tempCar;
+		this.vehicles.clear();
+		
+		for( int i = 0; i < this.game.players.length; i++)
+		{
+			tempCar = new Car(	this.game.players[i], 
+								this.world, 
+								this.pitch.getTeamStartPoint(this.game.players[i].playerTeam, i), 
+								this.pitch.getTeamStartAngle(this.game.players[i].playerTeam),
+								spriteHelper.getTeamCarSprite(i, this.game.players[i].playerTeam),
+								spriteHelper.getWheelSprite());
+			
+			this.vehicles.add(tempCar);
+		}
 	}
 
 	@Override

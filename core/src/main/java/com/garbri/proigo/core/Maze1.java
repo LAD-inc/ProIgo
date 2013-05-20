@@ -1,12 +1,10 @@
 package com.garbri.proigo.core;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -14,26 +12,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.Timer;
 import com.garbri.proigo.core.controls.IControls;
-import com.garbri.proigo.core.controls.KeyboardControls;
-import com.garbri.proigo.core.controls.XboxListener;
 import com.garbri.proigo.core.objects.Ball;
-import com.garbri.proigo.core.objects.Car;
-import com.garbri.proigo.core.objects.Goal;
 import com.garbri.proigo.core.objects.Maze;
-import com.garbri.proigo.core.utilities.Controls;
 import com.garbri.proigo.core.utilities.SpriteHelper;
 import com.garbri.proigo.core.utilities.TextDisplayHelper;
 import com.garbri.proigo.core.utilities.TimerHelper;
+import com.garbri.proigo.core.vehicles.Car;
+import com.garbri.proigo.core.vehicles.Vehicle;
 
 import com.badlogic.gdx.Screen;
 
 public class Maze1 implements Screen {
-private long lastRender;
-	
-	private OrthographicCamera camera;
+private OrthographicCamera camera;
 	private SpriteBatch spriteBatch;
 	/**
 	 * This is the main box2d "container" object. All bodies will be loaded in
@@ -54,15 +45,7 @@ private long lastRender;
 	private float worldHeight;
 	private static int PIXELS_PER_METER=10;      //how many pixels in a meter
 	
-	Controller[] controllers = new Controller[4];
-	
-	Car player1;
-	Car player2;
-	Car player3;
-	Car player4;
 	Ball ball;
-	Goal leftGoal;
-	Goal rightGoal;
 	
 	ArrayList<IControls> controls =  new ArrayList<IControls>() ;
 	
@@ -74,23 +57,39 @@ private long lastRender;
 	
 	private Sprite finishLine;
 	
-	Timer countdownTimer;
-	
-
-	XboxListener listener;
 	private TextDisplayHelper textDisplayer;
 	
 	private Boolean displayWinMessage;
 	private String winMessage;
 	
-	proigo game;
+	private proigo game;
 	
 	private TimerHelper timer;
+	
+	private List<Car> vehicles;
 	
 	public Maze1(proigo game)
 	{
 		this.game = game;
 		
+		this.screenWidth = 1400;
+		this.screenHeight = 900;
+		
+		this.worldWidth = this.screenWidth / PIXELS_PER_METER;
+		this.worldHeight = this.screenHeight / PIXELS_PER_METER;
+		
+		this.center = new Vector2(worldWidth/2, worldHeight/2);
+		
+		this.spriteHelper = new SpriteHelper();
+		
+		this.textDisplayer = new TextDisplayHelper();
+		
+	    this.camera = new OrthographicCamera();
+	    this.camera.setToOrtho(false, this.screenWidth, this.screenHeight);
+	    
+	    this.debugRenderer = new Box2DDebugRenderer();
+		
+		this.vehicles = new ArrayList<Car>();
 	}
 
 	private void resetGame()
@@ -98,10 +97,10 @@ private long lastRender;
 		dispose();
 		spriteBatch = new SpriteBatch();
 		
-		this.player1.destroyCar();
-		this.player2.destroyCar();
-		this.player3.destroyCar();
-		this.player4.destroyCar();
+		for (Vehicle vehicle:this.vehicles)
+		{
+			vehicle.destroyVehicle();
+		}
 		
 		this.maze.gameFinished = false;
 		this.displayWinMessage = false;
@@ -115,16 +114,21 @@ private long lastRender;
 	
 	private void createAllCars()
 	{
-		this.player1 = new Car("player1", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(0), spriteHelper.getCarSprite(0), spriteHelper.getWheelSprite());
-	    
-	    this.player2 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[0], (float) Math.PI/2, 60, 20, 180, controls.get(1), spriteHelper.getCarSprite(2), spriteHelper.getWheelSprite());
-	    this.player3 = new Car("player1", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(2), spriteHelper.getCarSprite(1), spriteHelper.getWheelSprite());
-	    
-	    this.player4 = new Car("player2", world, 2, 4,
-	    		this.maze.playerStartPoint[1], (float) (Math.PI + Math.PI/2), 60, 20, 180, controls.get(3), spriteHelper.getCarSprite(3), spriteHelper.getWheelSprite());
+		Car tempCar;
+		
+		this.vehicles.clear();
+		
+		for( int i = 0; i < this.game.players.length; i++)
+		{
+			tempCar = new Car(	this.game.players[i], 
+								this.world, 
+								this.maze.getPlayerStartPoint(i), 
+								this.maze.getPlayerStartAngle(i),
+								spriteHelper.getTeamCarSprite(i, this.game.players[i].playerTeam),
+								spriteHelper.getWheelSprite());
+			
+			this.vehicles.add(tempCar);
+		}
 	}
 
 	@Override
@@ -161,10 +165,12 @@ private long lastRender;
 
 		if (this.timer.countDownTimer == 0)
 		{
-			player1.controlCar();
-			player2.controlCar();
-			player3.controlCar();
-			player4.controlCar();
+			
+			for (Vehicle vehicle:this.vehicles)
+			{
+				vehicle.controlVehicle();
+			}
+			
 		}
 		else
 		{
@@ -178,30 +184,16 @@ private long lastRender;
 		{
 			//Player 1 wins if both cars reach it at the same time - MNaybe we should randomize this
 		
-			if (this.maze.checkForWin(this.player1.body.getPosition(), this.player1.playerName))
+			for (Vehicle vehicle:this.vehicles)
 			{
-				this.displayWinMessage = true;
-				this.winMessage = "BLUE TEAM WINS";
-				this.timer.startCountDown(3);
+				if (this.maze.checkForWin(vehicle.body.getPosition(), vehicle.player.playerName))
+				{
+					this.displayWinMessage = true;
+					this.winMessage = vehicle.player.getTeamName().toUpperCase() + " TEAM WINS";
+					this.timer.startCountDown(3);
+				}
 			}
-			if (this.maze.checkForWin(this.player2.body.getPosition(), this.player2.playerName))
-			{
-				this.displayWinMessage = true;
-				this.winMessage = "RED TEAM WINS";
-				this.timer.startCountDown(3);
-			}
-			if (this.maze.checkForWin(this.player3.body.getPosition(), this.player1.playerName))
-			{
-				this.displayWinMessage = true;
-				this.winMessage = "BLUE TEAM WINS";
-				this.timer.startCountDown(3);
-			}
-			if (this.maze.checkForWin(this.player4.body.getPosition(), this.player2.playerName))
-			{
-				this.displayWinMessage = true;
-				this.winMessage = "RED TEAM WINS";
-				this.timer.startCountDown(3);
-			}
+			
 		}
 		
 		
@@ -220,17 +212,11 @@ private long lastRender;
 		this.finishLine.setPosition((this.center.x * PIXELS_PER_METER) - this.finishLine.getWidth()/2, (this.center.y * PIXELS_PER_METER) - this.finishLine.getHeight()/2);
 		this.finishLine.draw(spriteBatch);
 		
-		//Update Player/Car 1		
-		player1.updateSprite(spriteBatch, PIXELS_PER_METER);
 		
-		//Update Player/Car 2
-		player2.updateSprite(spriteBatch, PIXELS_PER_METER);
-		
-		//Update Player/Car 1		
-		player3.updateSprite(spriteBatch, PIXELS_PER_METER);
-				
-		//Update Player/Car 2
-		player4.updateSprite(spriteBatch, PIXELS_PER_METER);
+		for (Vehicle vehicle:this.vehicles)
+		{
+			vehicle.updateSprite(spriteBatch, PIXELS_PER_METER);
+		}
 		
 		//Update Ball
 		SpriteHelper.updateSprite(ball.sprite, spriteBatch, PIXELS_PER_METER, ball.body);
@@ -285,70 +271,21 @@ private long lastRender;
 	@Override
 	public void show() {
 		
-		screenWidth = 1400;
-		screenHeight = 900;
-		
-		worldWidth = screenWidth / PIXELS_PER_METER;
-		worldHeight = screenHeight / PIXELS_PER_METER;
-		
-		//worldWidth = 800;
-		//worldHeight = 600;
 
-		//Box2d World init
-		this.center = new Vector2(worldWidth/2, worldHeight/2);
-		
-		world = new World(new Vector2(0.0f, 0.0f), true);	
-		
-		spriteHelper = new SpriteHelper();
-		
-		int i = 0;
-		
-		
-		for(Controller controller: Controllers.getControllers()) 
-		{
-		   Gdx.app.log("Main", controller.getName());
-		   XboxListener listener = new XboxListener();
-		   controller.addListener(listener);
-		   listener.getControls();
-		   controls.add(listener.getControls());
-		   this.controllers[i] = controller;
-		   i++;
-			   
-		}
-			
-			
-				controls.add( new KeyboardControls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT));
-				controls.add( new KeyboardControls(Input.Keys.DPAD_UP, Input.Keys.DPAD_DOWN, Input.Keys.DPAD_LEFT, Input.Keys.DPAD_RIGHT));
-				controls.add( new KeyboardControls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D));
-				controls.add( new KeyboardControls(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D));
-			
-			
-		
-		
-		textDisplayer = new TextDisplayHelper();
-		this.maze = new Maze(world, worldWidth, worldHeight, center);
+		//Leaving this here since creating a new world everytime we load might not be a bad idea from a clean up perspictive
+		this.world = new World(new Vector2(0.0f, 0.0f), true);
+		this.maze = new Maze(world, worldWidth, worldHeight, center, 6);
+		this.ball = new Ball(world, center.x, center.y, spriteHelper.getBallSprite());
 
 		createAllCars();
 
+		this.spriteBatch = new SpriteBatch();
 		
 	    this.finishLine = spriteHelper.getFinishLineSprite(20, (int) (worldHeight/(this.maze.numberOfInnerWalls+1))*PIXELS_PER_METER);
-	    
-	    camera = new OrthographicCamera();
-	    camera.setToOrtho(false, screenWidth, screenHeight);
-	    spriteBatch = new SpriteBatch();		
-										
-		debugRenderer = new Box2DDebugRenderer();
-	    
-		this.ball = new Ball(world, center.x, center.y, spriteHelper.getBallSprite());
-		
-		//this.pitch = new Pitch(world, worldWidth, worldHeight, center);
-		
-		this.maze = new Maze(world, worldWidth, worldHeight, center);
-		
+	    		
+
 		this.displayWinMessage = false;
-		
-		this.timer = new TimerHelper();		
-		
+		this.timer = new TimerHelper();	
 		this.timer.startCountDown(3);
 		
 		

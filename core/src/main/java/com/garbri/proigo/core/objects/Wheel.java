@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.garbri.proigo.core.utilities.SpriteHelper;
+import com.garbri.proigo.core.vehicles.Car;
 
 public class Wheel {	
 	/**
