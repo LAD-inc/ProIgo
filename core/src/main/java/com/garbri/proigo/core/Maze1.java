@@ -118,13 +118,13 @@ private OrthographicCamera camera;
 		
 		this.vehicles.clear();
 		
-		for( int i = 0; i < this.game.players.length; i++)
+		for( int i = 0; i < this.game.players.size(); i++)
 		{
-			tempCar = new Car(	this.game.players[i], 
+			tempCar = new Car(	this.game.players.get(i), 
 								this.world, 
 								this.maze.getPlayerStartPoint(i), 
 								this.maze.getPlayerStartAngle(i),
-								spriteHelper.getTeamCarSprite(i, this.game.players[i].playerTeam),
+								spriteHelper.getTeamCarSprite(i, this.game.players.get(i).playerTeam),
 								spriteHelper.getWheelSprite());
 			
 			this.vehicles.add(tempCar);
@@ -157,6 +157,18 @@ private OrthographicCamera camera;
 	    if (Gdx.input.isKeyPressed(Input.Keys.F2))
 	    {
 	    	this.game.setScreen(this.game.soccerScreen);
+	    }
+	    
+	    //checkForPlayerNumberChange to 2
+	    if (Gdx.input.isKeyPressed(Input.Keys.F3))
+	    {
+	    	this.game.changeNumberPlayers(2, this);
+	    }
+	    
+	    //checkForPlayerNumberChange to 4
+	    if (Gdx.input.isKeyPressed(Input.Keys.F4))
+	    {
+	    	this.game.changeNumberPlayers(4, this);
 	    }
 	    
 		spriteBatch.setProjectionMatrix(camera.combined);

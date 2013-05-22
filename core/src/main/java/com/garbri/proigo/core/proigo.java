@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.garbri.proigo.core.controls.IControls;
@@ -17,7 +18,7 @@ public class proigo extends Game {
 	public SoccerScreen soccerScreen;
 	
 	//Number of players;
-	public Player[] players = new Player[4];
+	public ArrayList<Player> players;
 	
 	ArrayList<IControls> controls =  new ArrayList<IControls>();
 	
@@ -27,21 +28,9 @@ public class proigo extends Game {
 		
 		this.initilizeControls();
 		
-		for(int i=0; i < this.players.length; i++)
-		{
-			this.players[i] = new Player("Player " + String.valueOf(i+1), this.controls.get(i));
-			this.players[i].active = true;
-			
-			if (i%2 == 0)
-			{
-				this.players[i].playerTeam = Player.team.blue;
-			}
-			else
-			{
-				this.players[i].playerTeam = Player.team.red;
-			}
-				
-		}
+		int numPlayers = 4;
+		
+		createPlayers(numPlayers);
 		
 		maze1 = new Maze1(this);
 		soccerScreen = new SoccerScreen(this);
@@ -51,6 +40,37 @@ public class proigo extends Game {
 		setScreen(maze1); 
 		
 	 
+	}
+	
+	private void createPlayers(int numberOfPlayers)
+	{
+		this.players = new ArrayList<Player>();
+		Player tempPlayer;
+		
+		
+		for(int i=0; i < numberOfPlayers; i++)
+		{
+			tempPlayer = new Player("Player " + String.valueOf(i+1), this.controls.get(i));
+			
+			tempPlayer.active = true;
+			
+			if (i%2 == 0)
+			{
+				tempPlayer.playerTeam = Player.team.blue;
+			}
+			else
+			{
+				tempPlayer.playerTeam = Player.team.red;
+			}
+			
+			this.players.add(tempPlayer);				
+		}
+	}
+	
+	public void changeNumberPlayers(int numberOfPlayers, Screen screen)
+	{
+		createPlayers(numberOfPlayers);
+		setScreen(screen);
 	}
 	
 	private void initilizeControls()
